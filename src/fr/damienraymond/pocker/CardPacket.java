@@ -53,5 +53,11 @@ public class CardPacket {
     }
 
 
+    public Card popCard() throws CardPacketException {
+        return cards.findFirst().orElseThrow(() ->
+            new CardPacketException("Empty packet")
+        );
+    }
+
 
 }
