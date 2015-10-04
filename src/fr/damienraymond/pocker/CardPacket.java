@@ -1,8 +1,6 @@
 package fr.damienraymond.pocker;
 
 import java.util.*;
-import java.util.function.Function;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -11,7 +9,7 @@ import java.util.stream.Stream;
  */
 public class CardPacket {
 
-    private Stream<Card> cards;
+    protected Iterator<Card> cards;
 
 
     public CardPacket() {
@@ -20,7 +18,7 @@ public class CardPacket {
     }
 
 
-    public Stream<Card> generateCardPacket(){
+    public Iterator<Card> generateCardPacket(){
         List<Level> levels = new ArrayList<>(EnumSet.allOf(Level.class));
         List<Color> colors = new ArrayList<>(EnumSet.allOf(Color.class));
         List<Card> cards = this.cartesianProductToProduceCardPacket(levels, colors);
@@ -31,7 +29,7 @@ public class CardPacket {
             cards = this.permute(cards);
         }
 
-        return cards.stream();
+        return cards.iterator();
     }
 
     public List<Card> cartesianProductToProduceCardPacket(List<Level> levels, List<Color> colors) {
@@ -54,9 +52,9 @@ public class CardPacket {
 
 
     public Card popCard() throws CardPacketException {
-        return cards.findFirst().orElseThrow(() ->
-            new CardPacketException("Empty packet")
-        );
+        if (! cards.hasNext())
+            throw new CardPacketException("Empty packet");
+        return cards.next();
     }
 
 
