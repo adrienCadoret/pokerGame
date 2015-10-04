@@ -28,7 +28,7 @@ public class CardPacket {
         // Use of several permutation
         int permutationNumber = 3;
         for (int i = 0; i < permutationNumber; i++) {
-            cards = this.permutate(cards);
+            cards = this.permute(cards);
         }
 
         return cards.stream();
@@ -45,7 +45,7 @@ public class CardPacket {
     }
 
 
-    public List<Card> permutate(List<Card> input) {
+    public List<Card> permute(List<Card> input) {
         // Clone collection to improve immutability
         ArrayList cards = (ArrayList)((ArrayList)input).clone();
         Collections.shuffle(cards);
