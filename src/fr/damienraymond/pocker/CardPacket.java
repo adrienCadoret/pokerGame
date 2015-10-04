@@ -39,7 +39,7 @@ public class CardPacket {
                                         .map(color ->
                                                         new Card(level, color)
                                         )
-                ).collect(Collectors.toCollection(LinkedList::new));
+                ).collect(Collectors.toCollection(ArrayList::new));
     }
 
 
