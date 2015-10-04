@@ -10,27 +10,35 @@ import java.util.stream.Stream;
 public class CardPacket {
 
     protected Iterator<Card> cards;
+    private int defaultPermutationNumber = 6;
 
+    public CardPacket(int permutationNumber) {
+        this.cards = this.generateCardPacket(permutationNumber);
+    }
 
-    public CardPacket() {
-
-        this.cards = this.generateCardPacket();
+    public CardPacket(){
+        this.cards = this.generateCardPacket(defaultPermutationNumber);
     }
 
 
-    public Iterator<Card> generateCardPacket(){
+    public Iterator<Card> generateCardPacket(int permutationNumber){
         List<Level> levels = new ArrayList<>(EnumSet.allOf(Level.class));
         List<Color> colors = new ArrayList<>(EnumSet.allOf(Color.class));
         List<Card> cards = this.cartesianProductToProduceCardPacket(levels, colors);
 
         // Use of several permutation
-        int permutationNumber = 3;
         for (int i = 0; i < permutationNumber; i++) {
             cards = this.permute(cards);
         }
 
         return cards.iterator();
     }
+
+    public Iterator<Card> generateCardPacket(){
+        return this.generateCardPacket(this.defaultPermutationNumber);
+    }
+
+
 
     public List<Card> cartesianProductToProduceCardPacket(List<Level> levels, List<Color> colors) {
         return levels.stream()
