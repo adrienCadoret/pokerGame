@@ -1,5 +1,11 @@
 package fr.damienraymond.pocker;
 
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.TreeSet;
+import java.util.stream.Collectors;
+
 /**
  * Created by damien on 02/10/2015.
  */
@@ -20,5 +26,16 @@ public enum Chip {
 
     public int getValue() {
         return value;
+    }
+
+    /**
+     * Get all chips values (int)
+     * @return a set of int thats corresponds to Chips values
+     */
+    public static Set<Integer> getAvailablesValue(){
+        return Arrays.asList(Chip.values())
+                .stream()                                       // Change list chip list to a stream
+                .map(Chip::getValue)                            // get each chip value
+                .collect(Collectors.toCollection(HashSet::new));// From this, get a set of values
     }
 }
