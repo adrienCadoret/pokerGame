@@ -1,7 +1,12 @@
 package fr.damienraymond.pocker;
 
 /**
- * Created by damien on 02/10/2015.
+ * Created by damien on 08/10/2015.
  */
-public class Hand {
+public interface Hand {
+
+    Hand addCard(Card c);
+    Card get(int i);
+    int getCardNumber();
+
 }
