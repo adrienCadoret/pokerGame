@@ -8,7 +8,7 @@ import java.util.Map;
  */
 public class HandConcrete implements Hand {
 
-    private Map<Integer, Card> cards;
+    protected Map<Integer, Card> cards;
 
     public HandConcrete(Map<Integer, Card> cards){
         if (cards.size() > 5)
@@ -16,16 +16,15 @@ public class HandConcrete implements Hand {
         this.cards = cards;
     }
 
-    private HandConcrete() {
+    protected HandConcrete() {
         this(new HashMap<>(5));
     }
 
 
     @Override
     public Hand addCard(Card c) {
-        // The index is one less than the number of elements
-        int index = this.getCardNumber() - 1;
-        cards.put(index, c);
+        int indexNextElement = this.getCardNumber();
+        cards.put(indexNextElement, c);
         // TODO : add factory ?
         return new HandConcrete(this.cards);
     }
