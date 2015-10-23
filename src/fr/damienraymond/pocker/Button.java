@@ -5,7 +5,7 @@ package fr.damienraymond.pocker;
  */
 public class Button {
 
-    private Player buttonOwnerPlayer;
+    protected Player buttonOwnerPlayer;
 
     /**
      * This method is able to determine if a player is this who has the button
@@ -16,6 +16,10 @@ public class Button {
         return (buttonOwnerPlayer != null) && buttonOwnerPlayer.equals(p);
     }
 
+    /**
+     * Get the button owner player
+     * @return the button owner player
+     */
     public Player getButtonOwnerPlayer() {
         return buttonOwnerPlayer;
     }
