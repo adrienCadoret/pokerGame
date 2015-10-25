@@ -13,7 +13,7 @@ public class ButtonTest {
     public void testThisPlayerIsTheOwnerOfTheButtonTrue() throws Exception {
         Table table = new Table();
         Player damien = new Player("Damien", table);
-        Button button = new Button();
+        Button button = new Button(null);
         button.buttonOwnerPlayer = damien;
         assertTrue(button.thisPlayerIsTheOwnerOfTheButton(damien));
     }
@@ -22,7 +22,7 @@ public class ButtonTest {
     public void testThisPlayerIsTheOwnerOfTheButtonFalse() throws Exception {
         Table table = new Table();
         Player damien = new Player("Damien", table);
-        Button button = new Button();
+        Button button = new Button(null);
         button.buttonOwnerPlayer = damien;
         assertFalse(button.thisPlayerIsTheOwnerOfTheButton(new Player("Paul", table)));
     }
@@ -31,7 +31,7 @@ public class ButtonTest {
     public void testGetButtonOwnerPlayer() throws Exception {
         Table table = new Table();
         Player damien = new Player("Damien", table);
-        Button button = new Button();
+        Button button = new Button(null);
         button.buttonOwnerPlayer = damien;
         assertEquals(damien, button.getButtonOwnerPlayer());
     }

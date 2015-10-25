@@ -7,6 +7,10 @@ public class Button {
 
     protected Player buttonOwnerPlayer;
 
+    public Button(Player buttonOwnerPlayer) {
+        this.buttonOwnerPlayer = buttonOwnerPlayer;
+    }
+
     /**
      * This method is able to determine if a player is this who has the button
      * @param p the player on want to check
