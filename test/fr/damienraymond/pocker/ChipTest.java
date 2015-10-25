@@ -3,7 +3,6 @@ package fr.damienraymond.pocker;
 import org.junit.Test;
 
 import java.util.Arrays;
-import java.util.List;
 
 import static org.junit.Assert.*;
 
@@ -19,7 +18,17 @@ public class ChipTest {
     }
 
     @Test
-    public void testGetAvailablesValue() throws Exception {
-        assertTrue(Arrays.asList(25, 50, 100, 500, 1_000, 5_000, 10_000).containsAll(Chip.getAvailablesValue()));
+    public void testGetAvailableValues() throws Exception {
+        assertTrue(Arrays.asList(25, 50, 100, 500, 1_000, 5_000, 10_000).containsAll(Chip.getAvailableValues()));
+    }
+
+    @Test
+    public void testValueOf1() throws Exception {
+        assertEquals(Chip.BLACK_100, Chip.valueOf(100));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testValueOf2() throws Exception {
+        Chip.valueOf(1234);
     }
 }
