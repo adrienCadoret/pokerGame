@@ -1,9 +1,6 @@
 package fr.damienraymond.pocker;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -32,10 +29,19 @@ public enum Chip {
      * Get all chips values (int)
      * @return a set of int thats corresponds to Chips values
      */
-    public static Set<Integer> getAvailablesValue(){
+    public static List<Integer> getAvailableValues(){
         return Arrays.asList(Chip.values())
-                .stream()                                       // Change list chip list to a stream
-                .map(Chip::getValue)                            // get each chip value
-                .collect(Collectors.toCollection(HashSet::new));// From this, get a set of values
+                .stream()                                           // Change list chip list to a stream
+                .map(Chip::getValue)                                // get each chip value
+                .collect(Collectors.toCollection(ArrayList::new));  // From this, get a set of values
+    }
+
+
+    public static Chip valueOf(Integer i){
+        return Arrays.asList(Chip.values())
+                .stream()
+                .filter(e -> i.equals(e.getValue()))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException(i + " is not value of Chip"));
     }
 }
