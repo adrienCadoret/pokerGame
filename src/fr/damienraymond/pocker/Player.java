@@ -45,4 +45,8 @@ public class Player {
         result = 31 * result + playerName.hashCode();
         return result;
     }
+
+    public boolean canPay() {
+        return true; // check money : for the moment let's guess the player is very rich
+    }
 }
