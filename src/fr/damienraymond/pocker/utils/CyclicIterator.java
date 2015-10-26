@@ -1,8 +1,8 @@
 package fr.damienraymond.pocker.utils;
 
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
+import fr.damienraymond.pocker.Player;
+
+import java.util.*;
 import java.util.function.Predicate;
 
 /**
@@ -13,9 +13,12 @@ public class CyclicIterator<T> implements Iterator<T> {
     private final List<T> list;
     private Iterator<T> iterator;
 
+    private Map<Player, Boolean> foldedPlayer;
+
     public CyclicIterator(List<T> list) {
         this.list = list;
         iterator = list.iterator();
+        this.initFoldedPlayer();
     }
 
     @Override
@@ -56,5 +59,23 @@ public class CyclicIterator<T> implements Iterator<T> {
 
     public List<T> takeListNumber() {
         return this.take(list.size());
+    }
+
+    public int number(){
+        return list.size();
+    }
+
+
+    // Todo : add specification to this class with this 3 method "metier"
+    public void initFoldedPlayer(){
+        this.foldedPlayer = new HashMap<>();
+    }
+
+    public void playerHasFold(Player p){
+        this.foldedPlayer.put(p, true);
+    }
+
+    public boolean thisPlayerHasFolded(Player p){
+        return this.foldedPlayer.getOrDefault(p, false);
     }
 }
