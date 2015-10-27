@@ -41,7 +41,7 @@ public abstract class Poker {
         int bigBlindAmount = this.blinds(playerCyclicIterator, initialAmount);
 
 
-        this.preFlop(playerCyclicIterator, bigBlindAmount);
+        this.preFlop(playerCyclicIterator);
 
     }
 
@@ -102,9 +102,10 @@ public abstract class Poker {
     }
 
 
+    private int bigBlindAmount;
 
     protected int blinds(CyclicIterator<Player> players, int initialAmount){
-        int bigBlindAmount   = initialAmount / 100;
+        bigBlindAmount = initialAmount / 100;
         int smallBlindAmount = bigBlindAmount / 2;
 
         this.askPlayerToGive(players.next(), smallBlindAmount);
@@ -112,15 +113,19 @@ public abstract class Poker {
         return bigBlindAmount;
     }
 
-    protected void preFlop(CyclicIterator<Player> players, final int bigBlindAmount){
+
+    private int playerCanPlayNumber;
+    private int amountToCall;
+
+    protected void preFlop(CyclicIterator<Player> players){
         final int totalPlayerNumber = players.number();
-        int playerCanPlayNumber = totalPlayerNumber;
+        playerCanPlayNumber = totalPlayerNumber;
         int hasPlayPlayerNumber = 0; // number of player that have to play. re-initialised on raises
 
         // Init memorisation of who is folded for the hand
         players.initFoldedPlayer();
 
-        int amountToCall = bigBlindAmount;
+        amountToCall = bigBlindAmount;
         boolean goOn = true;
         while(goOn){
             // Get next player around the table
