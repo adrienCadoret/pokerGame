@@ -66,7 +66,7 @@ public class CyclicIterator<T> implements Iterator<T> {
     }
 
 
-    // Todo : add specification to this class with this 3 method "metier"
+    // Todo : add specialisation to this class business methods
     public void initFoldedPlayer(){
         this.foldedPlayer = new HashMap<>();
     }
@@ -77,5 +77,15 @@ public class CyclicIterator<T> implements Iterator<T> {
 
     public boolean thisPlayerHasFolded(Player p){
         return this.foldedPlayer.getOrDefault(p, false);
+    }
+
+    public void cycleUntilAfterThisPlayer(Player p){
+        Player currentPlayer;
+        do {
+            currentPlayer = (Player)this.next();
+        }while (currentPlayer != p);
+
+        // Consume one more to go after Player p
+        this.next();
     }
 }
