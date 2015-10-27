@@ -38,10 +38,10 @@ public abstract class Poker {
 
         final CyclicIterator<Player> playerCyclicIterator = new CyclicIterator<>(players);
 
-        this.blinds(playerCyclicIterator, initialAmount);
+        int bigBlindAmount = this.blinds(playerCyclicIterator, initialAmount);
 
 
-        this.preFlop(playerCyclicIterator);
+        this.preFlop(playerCyclicIterator, bigBlindAmount);
 
     }
 
@@ -103,12 +103,13 @@ public abstract class Poker {
 
 
 
-    protected void blinds(CyclicIterator<Player> players, int initialAmount){
+    protected int blinds(CyclicIterator<Player> players, int initialAmount){
         int bigBlindAmount   = initialAmount / 100;
         int smallBlindAmount = bigBlindAmount / 2;
 
         this.askPlayerToGive(players.next(), smallBlindAmount);
         this.askPlayerToGive(players.next(), bigBlindAmount);
+        return bigBlindAmount;
     }
 
     protected void preFlop(CyclicIterator<Player> players, final int bigBlindAmount){
