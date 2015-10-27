@@ -43,6 +43,12 @@ public abstract class Poker {
 
         this.preFlop(playerCyclicIterator);
 
+        this.flop(playerCyclicIterator, button.getButtonOwnerPlayer(), 3); // get rid of the 3 here, not business
+
+        this.turn(playerCyclicIterator, button.getButtonOwnerPlayer());
+
+        this.river(playerCyclicIterator, button.getButtonOwnerPlayer());
+
     }
 
     protected List<Player> launch(Table table, Button button, int amount){
@@ -159,16 +165,72 @@ public abstract class Poker {
         }
     }
 
-    protected void flop(){
+    protected void flop(CyclicIterator<Player> players, Player buttonOwnerPlayer, int numberOfCardToReveal){
+        // Burn the card
+        this.burnCard();
+
+        // Reveals 3 card on the table
+        for (int i = 0; i < numberOfCardToReveal; i++) {
+            this.putOneCardOnTheTable();
+        }
+
+
+        // Cycle until player after button player
+        players.cycleUntilAfterThisPlayer(buttonOwnerPlayer);
+
+
+
+        int hasPlayPlayerNumber = 0; // number of player that have to play. re-initialised on raises
+        boolean canCheck = true;
+
+        boolean goOn = true;
+        while(goOn){
+            // Get next player around the table
+            Player currentPlayer = players.next();
+
+            // Check if the current player can play (not folded, and have enough money)
+            if(players.thisPlayerHasFolded(currentPlayer) && currentPlayer.canPay()){
+
+                // Ask to user the amount he wants to give
+                //  -1                            -> check
+                //  0                             -> fold
+                //  amountToCall                  -> call
+                //  amountToCall + bigBlindAmount -> raise
+                int amountThePlayerGive = this.askThePlayerToPlay(currentPlayer, bigBlindAmount, amountToCall);
+
+                if(amountThePlayerGive == -1){
+                    // in case of check
+                }else{
+
+                    canCheck = false;
+
+                    // Check id the player wants to fold
+                    if(amountThePlayerGive == 0) {
+                        players.playerHasFold(currentPlayer);
+                        playerCanPlayNumber -= 1;
+                    } else {
+                        // Check of the player has raised
+                        if(bigBlindAmount + amountToCall == amountThePlayerGive){
+                            // In case of raise
+                            hasPlayPlayerNumber = 0;
+                        }
+                        amountToCall = amountThePlayerGive;
+                    }
+                }
+            }
+
+            // Check end loop condition
+            goOn = hasPlayPlayerNumber < playerCanPlayNumber; // dummy for the moment. To be checked
+        }
 
     }
 
-    protected void turn(){
-
+    protected void turn(CyclicIterator<Player> playerCyclicIterator, Player buttonOwnerPlayer){
+        this.flop(playerCyclicIterator, buttonOwnerPlayer, 1);
     }
 
-    protected void river(){
-
+    protected void river(CyclicIterator<Player> playerCyclicIterator, Player buttonOwnerPlayer){
+        this.flop(playerCyclicIterator, buttonOwnerPlayer, 1);
     }
 
     protected void shotdown(){
