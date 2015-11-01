@@ -1,28 +1,40 @@
 package fr.damienraymond.pocker;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 /**
  * Created by damien on 02/10/2015.
  */
 public class Table {
 
+    public Button button;
+    public List<Player> players;
     /**
      * Give a random id to the table in case of usage of several ones
      */
     private UUID uuidTable;
 
-    public Button button;
 
-    public List<Player> players;
+    public Table(Button button) {
+        this.button = button;
+        this.uuidTable = UUID.randomUUID();
+    }
 
     public Button getButton() {
         return button;
     }
 
+    public void addPlayerToTable(Player p){
+        // First check if the player name is not already taken
+        List<String> playerNames = getPlayerNames();
+        playerNames.contains(p.getPlayerName());
 
-    public Table() {
-        this.uuidTable = UUID.randomUUID();
+
     }
+
 
     public List<String> getPlayerNames(){
         return players.stream()
