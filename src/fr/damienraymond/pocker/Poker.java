@@ -1,6 +1,7 @@
 package fr.damienraymond.pocker;
 
 import fr.damienraymond.pocker.card.Card;
+import fr.damienraymond.pocker.card.PlayerCyclicIterator;
 import fr.damienraymond.pocker.utils.CyclicIterator;
 import fr.damienraymond.pocker.utils.RandomFactory;
 
@@ -29,8 +30,9 @@ public abstract class Poker {
 
     public void poker() throws PokerException {
 
-        Table table = new Table();
         Button button = new Button(null);
+        Table table = new Table(button);
+
         int initialAmount = 20_000;
 
         List<Player> players = this.launch(table, button, initialAmount);
@@ -38,7 +40,7 @@ public abstract class Poker {
         if(players.isEmpty()) // TODO : check min player number
             throw new PokerException("Not enough players");
 
-        final CyclicIterator<Player> playerCyclicIterator = new CyclicIterator<>(players);
+        final PlayerCyclicIterator playerCyclicIterator = new PlayerCyclicIterator(players);
 
         int bigBlindAmount = this.blinds(playerCyclicIterator, initialAmount);
 
@@ -107,14 +109,18 @@ public abstract class Poker {
     protected List<Player> playerCreation(Table table, List<String> names){
         return names
                 .stream()
-                .map(name -> new Player(name, table))
+                .map(name -> {
+                    Player p = new Player(name, table);
+                    table.addPlayerToTable(p);
+                    return p;
+                })
                 .collect(Collectors.toList());
     }
 
 
     private int bigBlindAmount;
 
-    protected int blinds(CyclicIterator<Player> players, int initialAmount){
+    protected int blinds(PlayerCyclicIterator players, int initialAmount){
         bigBlindAmount = initialAmount / 100;
         int smallBlindAmount = bigBlindAmount / 2;
 
@@ -127,7 +133,7 @@ public abstract class Poker {
     private int playerCanPlayNumber;
     private int amountToCall;
 
-    protected void preFlop(CyclicIterator<Player> players){
+    protected void preFlop(PlayerCyclicIterator players){
         final int totalPlayerNumber = players.number();
         playerCanPlayNumber = totalPlayerNumber;
         int hasPlayPlayerNumber = 0; // number of player that have to play. re-initialised on raises
@@ -171,7 +177,7 @@ public abstract class Poker {
 
     private Player playerHasPlayedFirst = null;
 
-    protected void flop(CyclicIterator<Player> players, Player buttonOwnerPlayer, int numberOfCardToReveal){
+    protected void flop(PlayerCyclicIterator players, Player buttonOwnerPlayer, int numberOfCardToReveal){
         // Burn the card
         this.burnCard();
 
@@ -238,15 +244,15 @@ public abstract class Poker {
 
     }
 
-    protected void turn(CyclicIterator<Player> playerCyclicIterator, Player buttonOwnerPlayer){
+    protected void turn(PlayerCyclicIterator playerCyclicIterator, Player buttonOwnerPlayer){
         this.flop(playerCyclicIterator, buttonOwnerPlayer, 1);
     }
 
-    protected void river(CyclicIterator<Player> playerCyclicIterator, Player buttonOwnerPlayer){
+    protected void river(PlayerCyclicIterator playerCyclicIterator, Player buttonOwnerPlayer){
         this.flop(playerCyclicIterator, buttonOwnerPlayer, 1);
     }
 
-    protected void shutdown(CyclicIterator<Player> playerCyclicIterator, Button button){
+    protected void shutdown(PlayerCyclicIterator playerCyclicIterator, Button button){
 
         Player firstPlayerToRevealHisCards = null;
 
