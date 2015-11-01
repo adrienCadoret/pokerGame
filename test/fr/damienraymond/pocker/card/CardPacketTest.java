@@ -1,4 +1,6 @@
-package fr.damienraymond.pocker;
+package fr.damienraymond.pocker.card;
+
+import fr.damienraymond.pocker.card.*;
 
 import java.util.ArrayList;
 import java.util.EnumSet;

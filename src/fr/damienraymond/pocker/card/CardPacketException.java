@@ -1,4 +1,4 @@
-package fr.damienraymond.pocker;
+package fr.damienraymond.pocker.card;
 
 /**
  * Created by damien on 03/10/2015.

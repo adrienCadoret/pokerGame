@@ -1,5 +1,7 @@
 package fr.damienraymond.pocker;
 
+import fr.damienraymond.pocker.card.Card;
+
 import java.util.HashMap;
 import java.util.Map;
 

@@ -1,5 +1,6 @@
 package fr.damienraymond.pocker;
 
+import fr.damienraymond.pocker.card.Card;
 import fr.damienraymond.pocker.utils.CyclicIterator;
 import fr.damienraymond.pocker.utils.RandomFactory;
 

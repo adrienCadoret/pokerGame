@@ -1,8 +1,7 @@
-package fr.damienraymond.pocker;
+package fr.damienraymond.pocker.card;
 
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * Created by damien on 02/10/2015.

@@ -1,5 +1,8 @@
 package fr.damienraymond.pocker;
 
+import fr.damienraymond.pocker.card.Card;
+import fr.damienraymond.pocker.card.Color;
+import fr.damienraymond.pocker.card.Level;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
