@@ -26,7 +26,6 @@ public abstract class Poker {
     abstract protected void burnCard();
     abstract protected void putOneCardOnTheTable();
 
-
     public void poker() throws PokerException {
 
         Table table = new Table();
@@ -169,6 +168,8 @@ public abstract class Poker {
         }
     }
 
+    private Player playerHasPlayedFirst = null;
+
     protected void flop(CyclicIterator<Player> players, Player buttonOwnerPlayer, int numberOfCardToReveal){
         // Burn the card
         this.burnCard();
@@ -182,7 +183,8 @@ public abstract class Poker {
         // Cycle until player after button player
         players.cycleUntilAfterThisPlayer(buttonOwnerPlayer);
 
-
+        // Restart var playerHasPlayedFirst (beginning of flop, turn, river)
+        playerHasPlayedFirst = null;
 
         int hasPlayPlayerNumber = 0; // number of player that have to play. re-initialised on raises
         boolean canCheck = true;
@@ -194,6 +196,7 @@ public abstract class Poker {
 
             // Check if the current player can play (not folded, and have enough money)
             if(players.thisPlayerHasFolded(currentPlayer) && currentPlayer.canPay()){
+
 
                 // Ask to user the amount he wants to give
                 //  -1                            -> check
@@ -213,6 +216,11 @@ public abstract class Poker {
                         players.playerHasFold(currentPlayer);
                         playerCanPlayNumber -= 1;
                     } else {
+
+                        // Memorize the first player to call
+                        if(playerHasPlayedFirst == null)
+                            playerHasPlayedFirst = currentPlayer;
+
                         // Check of the player has raised
                         if(bigBlindAmount + amountToCall == amountThePlayerGive){
                             // In case of raise
