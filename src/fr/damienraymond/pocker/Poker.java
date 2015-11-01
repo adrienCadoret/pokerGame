@@ -18,6 +18,8 @@ public abstract class Poker {
     abstract protected void giveCardToPlayer(Set<Card> cards);
     abstract protected int askThePlayerToPlay(Player player, int bigBlindAmount, int amountToCall); // returns the player choice
 
+    abstract protected void shutdown(Player p);
+
 //    abstract protected void askPlayerToGiveSmallBlinds(Player player, int amount);
 //    abstract protected void askPlayerToGiveBigBlinds();
 
@@ -48,6 +50,8 @@ public abstract class Poker {
         this.turn(playerCyclicIterator, button.getButtonOwnerPlayer());
 
         this.river(playerCyclicIterator, button.getButtonOwnerPlayer());
+
+        this.shutdown(playerCyclicIterator, button);
 
     }
 
@@ -233,7 +237,36 @@ public abstract class Poker {
         this.flop(playerCyclicIterator, buttonOwnerPlayer, 1);
     }
 
-    protected void shotdown(){
+    protected void shutdown(CyclicIterator<Player> playerCyclicIterator, Button button){
+
+        Player firstPlayerToRevealHisCards = null;
+
+        if(playerHasPlayedFirst == null){
+            // If no player has call (only checks)
+            // We go to the player after the button
+            playerCyclicIterator.cycleUntilAfterThisPlayer(button.buttonOwnerPlayer);
+        } else {
+            // Go to the first player who played
+            playerCyclicIterator = playerCyclicIterator.dropWhile(p -> ! p.equals(playerHasPlayedFirst));
+        }
+
+        boolean goOn = true;
+        while(goOn) {
+            // Get next player around the table
+            Player currentPlayer = playerCyclicIterator.next();
+
+            if(firstPlayerToRevealHisCards == null)
+                firstPlayerToRevealHisCards = currentPlayer;
+
+            // If current player is not fold
+            if (playerCyclicIterator.thisPlayerHasFolded(currentPlayer)){
+                this.shutdown(currentPlayer);
+            }
+
+            // When the all the player has shown their cards
+            goOn = firstPlayerToRevealHisCards == currentPlayer;
+        }
+
 
     }
 
