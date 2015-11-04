@@ -110,7 +110,7 @@ public abstract class Poker {
         return names
                 .stream()
                 .map(name -> {
-                    Player p = new Player(name, table);
+                    Player p = new PlayerSimple(name, table); // TODO : change to factory and/or dep inj.
                     table.addPlayerToTable(p);
                     return p;
                 })

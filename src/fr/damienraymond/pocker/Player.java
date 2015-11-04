@@ -1,19 +1,26 @@
 package fr.damienraymond.pocker;
 
+import fr.damienraymond.pocker.card.Card;
+
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 /**
  * Created by damien on 01/10/2015.
  */
-public class Player {
+public abstract class Player {
 
-    private Table table;
+    protected Table table;
 
-    private ChipStack chips;
-    private Hand hand;
-    private String playerName;
+    protected ChipStack chips;
+    protected Hand hand;
+    protected String playerName;
 
     protected Player(String playerName, Table table) {
         this.playerName = playerName;
         this.table = table;
+        this.hand = new HandConcrete();
     }
 
 
@@ -46,7 +53,17 @@ public class Player {
         return result;
     }
 
-    public boolean canPay() {
-        return true; // check money : for the moment let's guess the player is very rich
-    }
+    public abstract boolean canPay();
+
+    public abstract Set<Chip> giveChip(int amount);
+
+    public abstract void receiveChipSet(Set<Chip> chips);
+
+    public abstract void receiveCards(List<Card> cards);
+
+    public abstract int play(int bigBlindAmount, int amountToCall);
+
+    public abstract List<Card> shutdown();
+
+
 }

@@ -2,6 +2,7 @@ package fr.damienraymond.pocker;
 
 import fr.damienraymond.pocker.card.Card;
 
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -10,27 +11,27 @@ import java.util.Set;
 public class PokerSimple extends Poker {
     @Override
     protected Set<Chip> askPlayerToGive(Player p, int amountOfMoney) {
-        return null;
+        return p.giveChip(amountOfMoney);
     }
 
     @Override
     protected void giveChipsToPlayer(Player player, Set<Chip> chips) {
-
+        player.receiveChipSet(chips);
     }
 
     @Override
-    protected void giveCardToPlayer(Set<Card> cards) {
-
+    protected void giveCardToPlayer(Player player, List<Card> cards) {
+        player.receiveCards(cards);
     }
 
     @Override
     protected int askThePlayerToPlay(Player player, int bigBlindAmount, int amountToCall) {
-        return 0;
+        return player.play(bigBlindAmount, amountToCall);
     }
 
     @Override
-    protected void shutdown(Player p) {
-
+    protected List<Card> shutdown(Player p) {
+        return p.shutdown();
     }
 
     @Override
