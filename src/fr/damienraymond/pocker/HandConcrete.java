@@ -3,6 +3,8 @@ package fr.damienraymond.pocker;
 import fr.damienraymond.pocker.card.Card;
 
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -43,5 +45,15 @@ public class HandConcrete implements Hand {
     @Override
     public int getCardNumber() {
         return cards.size();
+    }
+
+    @Override
+    public List<Card> getCards() {
+        return new LinkedList<>(cards.values());
+    }
+
+    @Override
+    public void empty() {
+        cards = new HashMap<>(5); // TODO change to 2
     }
 }
