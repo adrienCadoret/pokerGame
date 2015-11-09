@@ -61,7 +61,7 @@ public abstract class Player {
 
     public abstract void receiveCards(List<Card> cards);
 
-    public abstract int play(int bigBlindAmount, int amountToCall);
+    public abstract int play(int bigBlindAmount, int amountToCall, boolean playerCanCheck);
 
     public abstract List<Card> shutdown();
 
