@@ -4,6 +4,7 @@ import fr.damienraymond.pocker.card.Card;
 import fr.damienraymond.pocker.card.PlayerCyclicIterator;
 import fr.damienraymond.pocker.chip.Chip;
 import fr.damienraymond.pocker.chip.ChipUtils;
+import fr.damienraymond.pocker.observer.Subject;
 import fr.damienraymond.pocker.player.Player;
 import fr.damienraymond.pocker.player.PlayerSimple;
 import fr.damienraymond.pocker.utils.RandomFactory;
@@ -14,25 +15,31 @@ import java.util.stream.Collectors;
 /**
  * Created by damien on 23/10/2015.
  */
-public abstract class Poker {
+public abstract class Poker extends Subject {
 
+    protected Table table;
     private Button button;
-
-    abstract protected Set<Chip> askPlayerToGive(Player p, int amountOfMoney);
-    abstract protected void giveChipsToPlayer(Player player, Set<Chip> chips);
-
-    abstract protected void giveCardToPlayer(Player player, List<Card> cards);
-    abstract protected int askThePlayerToPlay(Player player, int bigBlindAmount, int amountToCall, boolean canCheck); // returns the player choice
-
-    abstract protected List<Card> shutdown(Player p);
+    private int amountToCall;
+    private int bigBlindAmount;
+    private int playerCanPlayNumber;
+    private Player playerHasPlayedFirst = null;
 
 //    abstract protected void askPlayerToGiveSmallBlinds(Player player, int amount);
 //    abstract protected void askPlayerToGiveBigBlinds();
 
-    abstract protected void burnCard();
-    abstract protected void putOneCardOnTheTable();
+    abstract protected Set<Chip> askPlayerToGive(Player p, int amountOfMoney);
 
-    protected Table table;
+    abstract protected void giveChipsToPlayer(Player player, Set<Chip> chips);
+
+    abstract protected void giveCardToPlayer(Player player, List<Card> cards);
+
+    abstract protected int askThePlayerToPlay(Player player, int bigBlindAmount, int amountToCall, boolean canCheck); // returns the player choice
+
+    abstract protected List<Card> shutdown(Player p);
+
+    abstract protected void burnCard();
+
+    abstract protected void putOneCardOnTheTable();
 
     public void poker(List<String> playerNames) throws PokerException {
 
@@ -40,12 +47,12 @@ public abstract class Poker {
 
         List<Player> players = this.launch(table, playerNames, initialAmount);
 
-        if(players.isEmpty()) // TODO : check min player number
+        if (players.isEmpty()) // TODO : check min player number
             throw new PokerException("Not enough players");
 
         final PlayerCyclicIterator playerCyclicIterator = new PlayerCyclicIterator(players);
 
-        int bigBlindAmount = this.blinds(playerCyclicIterator, initialAmount);
+        this.blinds(playerCyclicIterator, initialAmount);
 
 
         this.preFlop(playerCyclicIterator);
@@ -60,16 +67,25 @@ public abstract class Poker {
 
     }
 
+
+    /**
+     *******************************************************************************************************************
+     *****************************************             LAUNCH             ******************************************
+     *******************************************************************************************************************
+     */
+
+
     /**
      * Manage the launch of the poker game
-     *  player creation
-     *  button distribution
-     *  chip distribution
-     * @param table the table to witch player are seated
+     * player creation
+     * button distribution
+     * chip distribution
+     *
+     * @param table         the table to witch player are seated
      * @param initialAmount the initial amount of the game
      * @return a list of the players created
      */
-    protected List<Player> launch(Table table, List<String> names, int initialAmount){
+    protected List<Player> launch(Table table, List<String> names, int initialAmount) {
         // Player creation
         List<Player> players = this.playerCreation(names);
 
@@ -88,18 +104,8 @@ public abstract class Poker {
     }
 
     /**
-     * Way to distribute chips to players according a specific amont
-     * @param players the players to give chips
-     * @param amount the amount that represent chips to give to player
-     */
-    protected void chipDistribution(List<Player> players, int amount) {
-        // Call of getChipsSetFromAmount for each player, to prevent same memory pointer for chips
-        // In the future it could be better to avoid this and to clone the chips set
-        players.forEach(player -> this.giveChipsToPlayer(player, ChipUtils.getChipsSetFromAmount(amount)));
-    }
-
-    /**
      * Distribute the button to a random player
+     *
      * @param players player list
      */
     private void buttonDistribution(List<Player> players) {
@@ -108,13 +114,13 @@ public abstract class Poker {
         this.button = new Button(buttonOwner);
     }
 
-
     /**
      * Creation of players from a list of name
+     *
      * @param names list of future player name
      * @return the created players
      */
-    protected List<Player> playerCreation(List<String> names){
+    protected List<Player> playerCreation(List<String> names) {
         return names
                 .stream()
                 .map(PlayerSimple::new) // TODO : change to factory and/or dep inj.
@@ -123,11 +129,12 @@ public abstract class Poker {
 
     /**
      * Assign player to the table
-     * @param table the game table
+     *
+     * @param table   the game table
      * @param players the players
      * @return return a list of updated players
      */
-    protected List<Player> playerTableAssignments(Table table, List<Player> players){
+    protected List<Player> playerTableAssignments(Table table, List<Player> players) {
         return players
                 .stream()
                 .map(player -> {
@@ -138,23 +145,70 @@ public abstract class Poker {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Way to distribute chips to players according a specific amont
+     *
+     * @param players the players to give chips
+     * @param amount  the amount that represent chips to give to player
+     */
+    protected void chipDistribution(List<Player> players, int amount) {
+        // Call of getChipsSetFromAmount for each player, to prevent same memory pointer for chips
+        // In the future it could be better to avoid this and to clone the chips set
+        players.forEach(player -> this.giveChipsToPlayer(player, ChipUtils.getChipsSetFromAmount(amount)));
+    }
 
-    private int bigBlindAmount;
+    /**
+     *******************************************************************************************************************
+     *****************************************             BLINDS             ******************************************
+     *******************************************************************************************************************
+     */
 
-    protected int blinds(PlayerCyclicIterator players, int initialAmount){
+
+    /**
+     * Determine the blinds amounts and ask players after the button to give blinds (small and big)
+     * @param players the cyclic iterator of player
+     * @param initialAmount the initial amount
+     */
+    protected void blinds(PlayerCyclicIterator players, int initialAmount) {
+        int smallBlindAmount = this.determineBlindAmounts(initialAmount);
+
+        // Go to the button owner player
+        players.cycleUntilAfterThisPlayer(button.getButtonOwnerPlayer());
+
+        this.askPlayersToGiveBlinds(players, smallBlindAmount, bigBlindAmount);
+    }
+
+    /**
+     * Determine the blinds amounts
+     * @param initialAmount the initial amount
+     * @return small blind amount
+     */
+    protected int determineBlindAmounts(int initialAmount){
         bigBlindAmount = initialAmount / 100;
-        int smallBlindAmount = bigBlindAmount / 2;
-
-        this.askPlayerToGive(players.next(), smallBlindAmount);
-        this.askPlayerToGive(players.next(), bigBlindAmount);
-        return bigBlindAmount;
+        return bigBlindAmount / 2;
     }
 
 
-    private int playerCanPlayNumber;
-    private int amountToCall;
+    /**
+     * Ask players to give blinds
+     * @param players the cyclic iterator of player
+     * @param smallBlind the small blind amount
+     * @param bigBlind the big blind amount
+     */
+    protected void askPlayersToGiveBlinds(PlayerCyclicIterator players, int smallBlind, int bigBlind) {
+        this.askPlayerToGive(players.next(), smallBlind);
+        this.askPlayerToGive(players.next(), bigBlind);
+    }
 
-    protected void preFlop(PlayerCyclicIterator players){
+
+    /**
+     *******************************************************************************************************************
+     *****************************************            PRE-FLOP            ******************************************
+     *******************************************************************************************************************
+     */
+
+
+    protected void preFlop(PlayerCyclicIterator players) {
         final int totalPlayerNumber = players.number();
         playerCanPlayNumber = totalPlayerNumber;
         int hasPlayPlayerNumber = 0; // number of player that have to play. re-initialised on raises
@@ -164,12 +218,12 @@ public abstract class Poker {
 
         amountToCall = bigBlindAmount;
         boolean goOn = true;
-        while(goOn){
+        while (goOn) {
             // Get next player around the table
             Player currentPlayer = players.next();
 
             // Check if the current player can play (not folded, and have enough money)
-            if(players.thisPlayerHasFolded(currentPlayer) && currentPlayer.canPay()){
+            if (players.thisPlayerHasFolded(currentPlayer) && currentPlayer.canPay()) {
 
                 // Ask to user the amount he wants to give
                 //  O                             -> fold
@@ -178,12 +232,12 @@ public abstract class Poker {
                 int amountThePlayerGive = this.askThePlayerToPlay(currentPlayer, bigBlindAmount, amountToCall, false);
 
                 // Check id the player wants to fold
-                if(amountThePlayerGive == 0) {
+                if (amountThePlayerGive == 0) {
                     players.playerHasFold(currentPlayer);
                     playerCanPlayNumber -= 1;
                 } else {
                     // Check of the player has raised
-                    if(bigBlindAmount + amountToCall == amountThePlayerGive){
+                    if (bigBlindAmount + amountToCall == amountThePlayerGive) {
                         // In case of raise
                         hasPlayPlayerNumber = 0;
                     }
@@ -196,9 +250,14 @@ public abstract class Poker {
         }
     }
 
-    private Player playerHasPlayedFirst = null;
+    /**
+     *******************************************************************************************************************
+     *****************************************              FLOP              ******************************************
+     *******************************************************************************************************************
+     */
 
-    protected void flop(PlayerCyclicIterator players, Player buttonOwnerPlayer, int numberOfCardToReveal){
+
+    protected void flop(PlayerCyclicIterator players, Player buttonOwnerPlayer, int numberOfCardToReveal) {
         // Burn the card
         this.burnCard();
 
@@ -218,12 +277,12 @@ public abstract class Poker {
         boolean canCheck = true;
 
         boolean goOn = true;
-        while(goOn){
+        while (goOn) {
             // Get next player around the table
             Player currentPlayer = players.next();
 
             // Check if the current player can play (not folded, and have enough money)
-            if(players.thisPlayerHasFolded(currentPlayer) && currentPlayer.canPay()){
+            if (players.thisPlayerHasFolded(currentPlayer) && currentPlayer.canPay()) {
 
 
                 // Ask to user the amount he wants to give
@@ -233,24 +292,24 @@ public abstract class Poker {
                 //  amountToCall + bigBlindAmount -> raise
                 int amountThePlayerGive = this.askThePlayerToPlay(currentPlayer, bigBlindAmount, amountToCall, true);
 
-                if(amountThePlayerGive == -1){
+                if (amountThePlayerGive == -1) {
                     // in case of check
-                }else{
+                } else {
 
                     canCheck = false;
 
                     // Check id the player wants to fold
-                    if(amountThePlayerGive == 0) {
+                    if (amountThePlayerGive == 0) {
                         players.playerHasFold(currentPlayer);
                         playerCanPlayNumber -= 1;
                     } else {
 
                         // Memorize the first player to call
-                        if(playerHasPlayedFirst == null)
+                        if (playerHasPlayedFirst == null)
                             playerHasPlayedFirst = currentPlayer;
 
                         // Check of the player has raised
-                        if(bigBlindAmount + amountToCall == amountThePlayerGive){
+                        if (bigBlindAmount + amountToCall == amountThePlayerGive) {
                             // In case of raise
                             hasPlayPlayerNumber = 0;
                         }
@@ -265,37 +324,55 @@ public abstract class Poker {
 
     }
 
-    protected void turn(PlayerCyclicIterator playerCyclicIterator, Player buttonOwnerPlayer){
+    /**
+     *******************************************************************************************************************
+     *****************************************              TURN              ******************************************
+     *******************************************************************************************************************
+     */
+
+    protected void turn(PlayerCyclicIterator playerCyclicIterator, Player buttonOwnerPlayer) {
         this.flop(playerCyclicIterator, buttonOwnerPlayer, 1);
     }
 
-    protected void river(PlayerCyclicIterator playerCyclicIterator, Player buttonOwnerPlayer){
+    /**
+     *******************************************************************************************************************
+     *****************************************              RIVER             ******************************************
+     *******************************************************************************************************************
+     */
+
+    protected void river(PlayerCyclicIterator playerCyclicIterator, Player buttonOwnerPlayer) {
         this.flop(playerCyclicIterator, buttonOwnerPlayer, 1);
     }
 
-    protected void shutdown(PlayerCyclicIterator playerCyclicIterator, Button button){
+    /**
+     *******************************************************************************************************************
+     *****************************************            SHUTDOWN            ******************************************
+     *******************************************************************************************************************
+     */
+
+    protected void shutdown(PlayerCyclicIterator playerCyclicIterator, Button button) {
 
         Player firstPlayerToRevealHisCards = null;
 
-        if(playerHasPlayedFirst == null){
+        if (playerHasPlayedFirst == null) {
             // If no player has call (only checks)
             // We go to the player after the button
             playerCyclicIterator.cycleUntilAfterThisPlayer(button.buttonOwnerPlayer);
         } else {
             // Go to the first player who played
-            playerCyclicIterator = playerCyclicIterator.dropWhile(p -> ! p.equals(playerHasPlayedFirst));
+            playerCyclicIterator = playerCyclicIterator.dropWhile(p -> !p.equals(playerHasPlayedFirst));
         }
 
         boolean goOn = true;
-        while(goOn) {
+        while (goOn) {
             // Get next player around the table
             Player currentPlayer = playerCyclicIterator.next();
 
-            if(firstPlayerToRevealHisCards == null)
+            if (firstPlayerToRevealHisCards == null)
                 firstPlayerToRevealHisCards = currentPlayer;
 
             // If current player is not fold
-            if (playerCyclicIterator.thisPlayerHasFolded(currentPlayer)){
+            if (playerCyclicIterator.thisPlayerHasFolded(currentPlayer)) {
                 List<Card> cards = this.shutdown(currentPlayer);
             }
 
