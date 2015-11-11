@@ -75,32 +75,9 @@ public abstract class Poker {
     }
 
     protected void chipDistribution(List<Player> players, int amount) {
-        Set<Chip> chips = this.getInitChipStackForPlayer(amount);
-        players.forEach(player -> this.giveChipsToPlayer(player, chips));
-    }
-
-    protected Set<Chip> getInitChipStackForPlayer(final int amount){
-        List<Integer> values = Chip.getAvailableValues();
-        values = values
-                .stream()
-                .filter(e -> e <= amount)
-                .collect(Collectors.toList());
-
-        // Then sort and reverse the list
-        Collections.sort(values);
-        Collections.reverse(values);
-
-        Set<Chip> chips = new HashSet<>();
-
-        int numberOfChipForValue;
-        int amountLoop = amount;
-        for (Integer value : values) {
-            numberOfChipForValue = amountLoop % value;
-            IntStream.range(0, numberOfChipForValue)
-                    .forEach(e -> chips.add(Chip.valueOf(value)));
-            amountLoop = amountLoop % value;
-        }
-        return chips;
+        // Call of getChipsSetFromAmount for each player, to prevent same memory pointer for chips
+        // In the future it could be better to avoid this and to clone the chips set
+        players.forEach(player -> this.giveChipsToPlayer(player, ChipUtils.getChipsSetFromAmount(amount)));
     }
 
     private Button buttonDistribution(List<Player> players, Button button) {
