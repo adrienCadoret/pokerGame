@@ -2,8 +2,11 @@ package fr.damienraymond.pocker.player;
 
 import fr.damienraymond.pocker.*;
 import fr.damienraymond.pocker.card.Card;
+import fr.damienraymond.pocker.chip.Chip;
+import fr.damienraymond.pocker.chip.ChipStack;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -11,7 +14,7 @@ import java.util.Set;
  */
 public abstract class Player {
 
-    protected Table table;
+    protected Optional<Table> table;
 
     protected ChipStack chips;
     protected Hand hand;
@@ -19,7 +22,13 @@ public abstract class Player {
 
     protected Player(String playerName, Table table) {
         this.playerName = playerName;
-        this.table = table;
+        this.table = Optional.of(table);
+        this.hand = new HandConcrete();
+    }
+
+    protected Player(String playerName) {
+        this.playerName = playerName;
+        this.table = Optional.empty();
         this.hand = new HandConcrete();
     }
 
@@ -66,4 +75,7 @@ public abstract class Player {
     public abstract List<Card> shutdown();
 
 
+    public void setTable(Table table) {
+        this.table = Optional.of(table);
+    }
 }

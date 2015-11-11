@@ -1,6 +1,6 @@
 package fr.damienraymond.pocker.player;
 
-import fr.damienraymond.pocker.Chip;
+import fr.damienraymond.pocker.chip.Chip;
 import fr.damienraymond.pocker.Table;
 import fr.damienraymond.pocker.card.Card;
 import fr.damienraymond.pocker.utils.UserInput;
@@ -14,6 +14,10 @@ public class PlayerSimple extends Player {
 
     public PlayerSimple(String playerName, Table table) {
         super(playerName, table);
+    }
+
+    public PlayerSimple(String playerName) {
+        super(playerName);
     }
 
     public boolean canPay() {
@@ -46,8 +50,6 @@ public class PlayerSimple extends Player {
         hand.empty();
         return card;
     }
-
-
 
 
 }
