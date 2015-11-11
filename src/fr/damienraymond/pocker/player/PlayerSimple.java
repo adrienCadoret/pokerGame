@@ -37,7 +37,17 @@ public class PlayerSimple extends Player {
         cards.forEach(hand::addCard);
     }
 
+    protected String getGameInfos(){
+        String res = "GameInfos [";
+        res += table.map(t -> {
+            return t.getPlayers().stream().map(Player::toString);
+        });
+        return res + "]";
+    }
+
     public int play(int bigBlindAmount, int amountToCall, boolean playerCanCheck) {
+
+        System.out.println(this.getGameInfos());
 
         // List of the correct user inputs
         List<Integer> correctValues = new ArrayList<>(PlayerInput.getChoices(bigBlindAmount, amountToCall, playerCanCheck).values());
