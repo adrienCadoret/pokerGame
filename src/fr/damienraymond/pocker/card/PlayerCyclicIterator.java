@@ -36,7 +36,7 @@ public class PlayerCyclicIterator extends CyclicIterator<Player> {
         Player currentPlayer;
         do {
             currentPlayer = (Player) this.next();
-        } while (currentPlayer != p);
+        } while (! currentPlayer.equals(p));
 
         // Consume one more to go after Player p
         this.next();
