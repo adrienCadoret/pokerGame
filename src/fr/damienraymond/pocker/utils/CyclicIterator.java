@@ -1,7 +1,5 @@
 package fr.damienraymond.pocker.utils;
 
-import fr.damienraymond.pocker.Player;
-
 import java.util.*;
 import java.util.function.Predicate;
 

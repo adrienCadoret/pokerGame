@@ -2,7 +2,8 @@ package fr.damienraymond.pocker;
 
 import fr.damienraymond.pocker.card.Card;
 import fr.damienraymond.pocker.card.PlayerCyclicIterator;
-import fr.damienraymond.pocker.utils.CyclicIterator;
+import fr.damienraymond.pocker.player.Player;
+import fr.damienraymond.pocker.player.PlayerSimple;
 import fr.damienraymond.pocker.utils.RandomFactory;
 
 import java.util.*;
@@ -17,10 +18,10 @@ public abstract class Poker {
     abstract protected Set<Chip> askPlayerToGive(Player p, int amountOfMoney);
     abstract protected void giveChipsToPlayer(Player player, Set<Chip> chips);
 
-    abstract protected void giveCardToPlayer(Set<Card> cards);
-    abstract protected int askThePlayerToPlay(Player player, int bigBlindAmount, int amountToCall); // returns the player choice
+    abstract protected void giveCardToPlayer(Player player, List<Card> cards);
+    abstract protected int askThePlayerToPlay(Player player, int bigBlindAmount, int amountToCall, boolean canCheck); // returns the player choice
 
-    abstract protected void shutdown(Player p);
+    abstract protected List<Card> shutdown(Player p);
 
 //    abstract protected void askPlayerToGiveSmallBlinds(Player player, int amount);
 //    abstract protected void askPlayerToGiveBigBlinds();
@@ -28,10 +29,13 @@ public abstract class Poker {
     abstract protected void burnCard();
     abstract protected void putOneCardOnTheTable();
 
+    protected Table table;
+
     public void poker() throws PokerException {
 
         Button button = new Button(null);
-        Table table = new Table(button);
+
+        table = new Table(button);
 
         int initialAmount = 20_000;
 
@@ -154,7 +158,7 @@ public abstract class Poker {
                 //  O                             -> fold
                 //  amountToCall                  -> call
                 //  amountToCall + bigBlindAmount -> raise
-                int amountThePlayerGive = this.askThePlayerToPlay(currentPlayer, bigBlindAmount, amountToCall);
+                int amountThePlayerGive = this.askThePlayerToPlay(currentPlayer, bigBlindAmount, amountToCall, false);
 
                 // Check id the player wants to fold
                 if(amountThePlayerGive == 0) {
@@ -210,7 +214,7 @@ public abstract class Poker {
                 //  0                             -> fold
                 //  amountToCall                  -> call
                 //  amountToCall + bigBlindAmount -> raise
-                int amountThePlayerGive = this.askThePlayerToPlay(currentPlayer, bigBlindAmount, amountToCall);
+                int amountThePlayerGive = this.askThePlayerToPlay(currentPlayer, bigBlindAmount, amountToCall, true);
 
                 if(amountThePlayerGive == -1){
                     // in case of check
@@ -275,7 +279,7 @@ public abstract class Poker {
 
             // If current player is not fold
             if (playerCyclicIterator.thisPlayerHasFolded(currentPlayer)){
-                this.shutdown(currentPlayer);
+                List<Card> cards = this.shutdown(currentPlayer);
             }
 
             // When the all the player has shown their cards

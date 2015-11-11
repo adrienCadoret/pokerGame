@@ -1,5 +1,7 @@
 package fr.damienraymond.pocker;
 
+import fr.damienraymond.pocker.player.Player;
+
 /**
  * Created by damien on 01/10/2015.
  */

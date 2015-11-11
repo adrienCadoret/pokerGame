@@ -20,7 +20,7 @@ public class HandConcrete implements Hand {
         this.cards = cards;
     }
 
-    protected HandConcrete() {
+    public HandConcrete() {
         this(new HashMap<>(5));
     }
 

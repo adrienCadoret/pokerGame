@@ -1,6 +1,6 @@
 package fr.damienraymond.pocker.card;
 
-import fr.damienraymond.pocker.Player;
+import fr.damienraymond.pocker.player.Player;
 import fr.damienraymond.pocker.utils.CyclicIterator;
 
 import java.util.HashMap;

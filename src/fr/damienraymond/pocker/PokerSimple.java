@@ -1,6 +1,7 @@
 package fr.damienraymond.pocker;
 
 import fr.damienraymond.pocker.card.Card;
+import fr.damienraymond.pocker.player.Player;
 
 import java.util.List;
 import java.util.Set;
@@ -25,8 +26,8 @@ public class PokerSimple extends Poker {
     }
 
     @Override
-    protected int askThePlayerToPlay(Player player, int bigBlindAmount, int amountToCall) {
-        return player.play(bigBlindAmount, amountToCall);
+    protected int askThePlayerToPlay(Player player, int bigBlindAmount, int amountToCall, boolean canCheck) {
+        return player.play(bigBlindAmount, amountToCall, canCheck);
     }
 
     @Override

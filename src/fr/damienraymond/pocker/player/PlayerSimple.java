@@ -12,7 +12,7 @@ import java.util.*;
  */
 public class PlayerSimple extends Player {
 
-    protected PlayerSimple(String playerName, Table table) {
+    public PlayerSimple(String playerName, Table table) {
         super(playerName, table);
     }
 
