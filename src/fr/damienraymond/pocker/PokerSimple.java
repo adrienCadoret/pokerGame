@@ -1,6 +1,7 @@
 package fr.damienraymond.pocker;
 
 import fr.damienraymond.pocker.card.Card;
+import fr.damienraymond.pocker.chip.Chip;
 import fr.damienraymond.pocker.player.Player;
 
 import java.util.List;

@@ -11,7 +11,7 @@ import java.util.stream.IntStream;
  * Created by damien on 11/11/2015.
  */
 public class ChipUtils {
-    public static Set<Chip> getInitChipStackForPlayer(final int amount){
+    public static Set<Chip> getChipsSetFromAmount(final int amount){
         List<Integer> values = Chip.getAvailableValues();
         values = values
                 .stream()

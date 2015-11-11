@@ -1,4 +1,4 @@
-package fr.damienraymond.pocker;
+package fr.damienraymond.pocker.chip;
 
 import java.util.*;
 import java.util.stream.Collectors;

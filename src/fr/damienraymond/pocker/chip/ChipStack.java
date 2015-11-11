@@ -1,6 +1,4 @@
-package fr.damienraymond.pocker;
-
-import javafx.collections.transformation.SortedList;
+package fr.damienraymond.pocker.chip;
 
 import java.util.*;
 import java.util.stream.Collectors;

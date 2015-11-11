@@ -1,5 +1,6 @@
 package fr.damienraymond.pocker;
 
+import fr.damienraymond.pocker.chip.Chip;
 import org.junit.Test;
 
 import java.util.Arrays;

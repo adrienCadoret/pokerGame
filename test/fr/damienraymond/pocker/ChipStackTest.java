@@ -1,5 +1,7 @@
 package fr.damienraymond.pocker;
 
+import fr.damienraymond.pocker.chip.Chip;
+import fr.damienraymond.pocker.chip.ChipStack;
 import org.junit.Test;
 
 import java.util.HashMap;
