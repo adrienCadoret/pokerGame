@@ -79,7 +79,7 @@ public abstract class Poker {
         this.table.setButton(this.button);
 
         // Player table assignation
-        this.playerTableAssignement(table, players);
+        players = this.playerTableAssignments(table, players);
 
         // Chip distribution
         this.chipDistribution(players, initialAmount);
@@ -98,7 +98,10 @@ public abstract class Poker {
         players.forEach(player -> this.giveChipsToPlayer(player, ChipUtils.getChipsSetFromAmount(amount)));
     }
 
-
+    /**
+     * Distribute the button to a random player
+     * @param players player list
+     */
     private void buttonDistribution(List<Player> players) {
         int randomInt = RandomFactory.randInt(0, players.size() - 1);
         Player buttonOwner = players.get(randomInt);
@@ -106,6 +109,11 @@ public abstract class Poker {
     }
 
 
+    /**
+     * Creation of players from a list of name
+     * @param names list of future player name
+     * @return the created players
+     */
     protected List<Player> playerCreation(List<String> names){
         return names
                 .stream()
@@ -113,7 +121,13 @@ public abstract class Poker {
                 .collect(Collectors.toList());
     }
 
-    protected List<Player> playerTableAssignement(Table table, List<Player> players){
+    /**
+     * Assign player to the table
+     * @param table the game table
+     * @param players the players
+     * @return return a list of updated players
+     */
+    protected List<Player> playerTableAssignments(Table table, List<Player> players){
         return players
                 .stream()
                 .map(player -> {

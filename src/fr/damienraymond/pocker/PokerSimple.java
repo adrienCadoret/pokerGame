@@ -44,5 +44,8 @@ public class PokerSimple extends Poker {
     @Override
     protected void putOneCardOnTheTable() {
 
+    @Override
+    public void notifyObservers() {
+        observerList.forEach(Observer::notify);
     }
 }

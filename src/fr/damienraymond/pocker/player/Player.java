@@ -4,6 +4,7 @@ import fr.damienraymond.pocker.*;
 import fr.damienraymond.pocker.card.Card;
 import fr.damienraymond.pocker.chip.Chip;
 import fr.damienraymond.pocker.chip.ChipStack;
+import fr.damienraymond.pocker.observer.Observer;
 
 import java.util.List;
 import java.util.Optional;
@@ -12,7 +13,7 @@ import java.util.Set;
 /**
  * Created by damien on 01/10/2015.
  */
-public abstract class Player {
+public abstract class Player implements Observer {
 
     protected Optional<Table> table;
 

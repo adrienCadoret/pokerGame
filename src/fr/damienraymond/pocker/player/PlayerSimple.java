@@ -52,4 +52,8 @@ public class PlayerSimple extends Player {
     }
 
 
+    @Override
+    public void update() {
+
+    }
 }
