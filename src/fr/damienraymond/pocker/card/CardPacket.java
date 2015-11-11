@@ -19,8 +19,14 @@ public class CardPacket {
         this.cards = this.generateCardPacket(defaultPermutationNumber);
     }
 
-
-    public Iterator<Card> generateCardPacket(int permutationNumber){
+    /**
+     * Generate card packet
+     *  create cards
+     *  permute permutationNumber times the packet
+     * @param permutationNumber discribe the number of permutation
+     * @return return cards
+     */
+    protected Iterator<Card> generateCardPacket(int permutationNumber){
         List<Level> levels = new ArrayList<>(EnumSet.allOf(Level.class));
         List<Color> colors = new ArrayList<>(EnumSet.allOf(Color.class));
         List<Card> cards = this.cartesianProductToProduceCardPacket(levels, colors);
@@ -33,13 +39,13 @@ public class CardPacket {
         return cards.iterator();
     }
 
-    public Iterator<Card> generateCardPacket(){
-        return this.generateCardPacket(this.defaultPermutationNumber);
-    }
-
-
-
-    public List<Card> cartesianProductToProduceCardPacket(List<Level> levels, List<Color> colors) {
+    /**
+     * Produce a list of card from the product of level (2,3,...,AS) and colors
+     * @param levels the level list
+     * @param colors the color list
+     * @return a list of 52 (card(level) + card(colors)) card
+     */
+    protected List<Card> cartesianProductToProduceCardPacket(List<Level> levels, List<Color> colors) {
         return levels.stream()
                 .flatMap(level ->
                                 colors.stream()
@@ -50,19 +56,33 @@ public class CardPacket {
     }
 
 
-    public List<Card> permute(List<Card> input) {
+    /**
+     * Permute cards of the packet
+     * @param input the cards to permute
+     * @return permuted cards
+     */
+    protected List<Card> permute(List<Card> input) {
         // Clone collection to improve immutability
         ArrayList cards = (ArrayList)((ArrayList)input).clone();
         Collections.shuffle(cards);
         return cards;
     }
 
-    private void thereIsNoCardLeftInThePacket() throws CardPacketException {
+    /**
+     * Manage errors when no card is left on the packet
+     * @throws CardPacketException
+     */
+    protected void thereIsNoCardLeftInThePacket() throws CardPacketException {
         // It throws an exception now but I think that, in the future, it could be a good idea to refill the packet. But I'am not sure that it's one of the rules.
         throw new CardPacketException("Empty packet");
     }
 
 
+    /**
+     * Get the card in the top of the packet
+     * @return the card in the top of the packet
+     * @throws CardPacketException
+     */
     public Card popCard() throws CardPacketException {
         if (! cards.hasNext())
             this.thereIsNoCardLeftInThePacket();
