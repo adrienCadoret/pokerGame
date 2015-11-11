@@ -54,6 +54,8 @@ public class PlayerSimple extends Player {
 
     @Override
     public void update() {
-
+        // I know this is useless for the moment
+        //  but I bet that later it will be
+        table.ifPresent(t -> table = Optional.of(t.update()));
     }
 }

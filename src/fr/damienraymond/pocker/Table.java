@@ -5,10 +5,7 @@ import fr.damienraymond.pocker.card.CardPacket;
 import fr.damienraymond.pocker.card.CardPacketException;
 import fr.damienraymond.pocker.player.Player;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -92,5 +89,9 @@ public class Table {
 
     public void setButton(Button button) {
         this.button = button;
+    }
+
+    public Table update() {
+        return this;
     }
 }
