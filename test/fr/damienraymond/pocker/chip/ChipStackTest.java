@@ -1,4 +1,4 @@
-package fr.damienraymond.pocker;
+package fr.damienraymond.pocker.chip;
 
 import fr.damienraymond.pocker.chip.Chip;
 import fr.damienraymond.pocker.chip.ChipStack;
