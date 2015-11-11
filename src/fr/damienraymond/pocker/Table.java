@@ -1,6 +1,12 @@
 package fr.damienraymond.pocker;
 
+import fr.damienraymond.pocker.card.Card;
+import fr.damienraymond.pocker.card.CardPacket;
+import fr.damienraymond.pocker.card.CardPacketException;
+import fr.damienraymond.pocker.player.Player;
+
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -17,11 +23,18 @@ public class Table {
      */
     private UUID uuidTable;
 
+    private List<Card> cardsOnTheTable;
+
+    private CardPacket cardPacket;
 
     public Table(Button button) {
         this.button = button;
         this.uuidTable = UUID.randomUUID();
+        this.initCardOnTheTable();
+        this.cardPacket = new CardPacket();
     }
+
+
 
     public Button getButton() {
         return button;
@@ -40,6 +53,20 @@ public class Table {
         return players.stream()
                 .map(Player::getPlayerName)
                 .collect(Collectors.toCollection(ArrayList::new));
+    }
+
+    public void addCardOnTheTable(){
+        try {
+            Card c = cardPacket.popCard();
+            cardsOnTheTable.add(c);
+        } catch (CardPacketException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    public void initCardOnTheTable(){
+        this.cardsOnTheTable = new LinkedList<>();
     }
 
     /**
