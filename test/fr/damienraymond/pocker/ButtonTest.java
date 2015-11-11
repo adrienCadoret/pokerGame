@@ -1,6 +1,11 @@
 package fr.damienraymond.pocker;
 
+import fr.damienraymond.pocker.player.Player;
+import fr.damienraymond.pocker.player.PlayerSimple;
 import org.junit.Test;
+
+import java.util.LinkedList;
+import java.util.List;
 
 import static org.junit.Assert.*;
 
@@ -11,27 +16,27 @@ public class ButtonTest {
 
     @Test
     public void testThisPlayerIsTheOwnerOfTheButtonTrue() throws Exception {
-        Table table = new Table();
-        Player damien = new Player("Damien", table);
         Button button = new Button(null);
+        Table table = new Table(button, new LinkedList<>());
+        Player damien = new PlayerSimple("Damien", table);
         button.buttonOwnerPlayer = damien;
         assertTrue(button.thisPlayerIsTheOwnerOfTheButton(damien));
     }
 
     @Test
     public void testThisPlayerIsTheOwnerOfTheButtonFalse() throws Exception {
-        Table table = new Table();
-        Player damien = new Player("Damien", table);
         Button button = new Button(null);
+        Table table = new Table(button, new LinkedList<>());
+        Player damien = new PlayerSimple("Damien", table);
         button.buttonOwnerPlayer = damien;
-        assertFalse(button.thisPlayerIsTheOwnerOfTheButton(new Player("Paul", table)));
+        assertFalse(button.thisPlayerIsTheOwnerOfTheButton(new PlayerSimple("Paul", table)));
     }
 
     @Test
     public void testGetButtonOwnerPlayer() throws Exception {
-        Table table = new Table();
-        Player damien = new Player("Damien", table);
         Button button = new Button(null);
+        Table table = new Table(button, new LinkedList<>());
+        Player damien = new PlayerSimple("Damien", table);
         button.buttonOwnerPlayer = damien;
         assertEquals(damien, button.getButtonOwnerPlayer());
     }

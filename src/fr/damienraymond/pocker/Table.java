@@ -19,22 +19,26 @@ public class Table {
      * Give a random id to the table in case of usage of several ones
      */
     private UUID uuidTable;
-
     private List<Card> cardsOnTheTable;
-
     private CardPacket cardPacket;
-
-    public Table(Button button) {
+    public Table(Button button, List<Player> players) {
         this.button = button;
+        this.players = players;
         this.uuidTable = UUID.randomUUID();
         this.initCardOnTheTable();
         this.cardPacket = new CardPacket();
     }
 
-
+    public List<Player> getPlayers() {
+        return players;
+    }
 
     public Button getButton() {
         return button;
+    }
+
+    public void setButton(Button button) {
+        this.button = button;
     }
 
     public void addPlayerToTable(Player p){
@@ -44,7 +48,6 @@ public class Table {
 
 
     }
-
 
     public List<String> getPlayerNames(){
         return players.stream()
@@ -85,10 +88,6 @@ public class Table {
     @Override
     public int hashCode() {
         return uuidTable.hashCode();
-    }
-
-    public void setButton(Button button) {
-        this.button = button;
     }
 
     public Table update() {

@@ -6,6 +6,7 @@ import fr.damienraymond.pocker.chip.Chip;
 import fr.damienraymond.pocker.chip.ChipStack;
 import fr.damienraymond.pocker.observer.Observer;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -22,15 +23,18 @@ public abstract class Player implements Observer {
     protected String playerName;
 
     protected Player(String playerName, Table table) {
-        this.playerName = playerName;
-        this.table = Optional.of(table);
-        this.hand = new HandConcrete();
+        this.init(playerName, Optional.of(table));
     }
 
     protected Player(String playerName) {
+        this.init(playerName, Optional.empty());
+    }
+
+    protected void init(String playerName, Optional<Table> table){
         this.playerName = playerName;
-        this.table = Optional.empty();
+        this.table = table;
         this.hand = new HandConcrete();
+        this.chips = new ChipStack(new HashMap<>());
     }
 
 

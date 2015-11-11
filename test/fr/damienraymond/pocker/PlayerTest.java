@@ -4,6 +4,8 @@ import fr.damienraymond.pocker.player.Player;
 import fr.damienraymond.pocker.player.PlayerSimple;
 import org.junit.Test;
 
+import java.util.LinkedList;
+
 import static org.junit.Assert.*;
 
 /**
@@ -16,7 +18,7 @@ public class PlayerTest {
         String name = "Damien";
         Player player = new PlayerSimple(name);
         Button button = new Button(player);
-        Table table = new Table(button);
+        Table table = new Table(button, new LinkedList<>());
         player.setTable(table);
 
         assertEquals(name, player.getPlayerName());

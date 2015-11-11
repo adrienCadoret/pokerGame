@@ -92,10 +92,10 @@ public abstract class Poker extends Subject {
 
         // Button distribution
         this.buttonDistribution(players);
-        this.table.setButton(this.button);
+        this.table = new Table(this.button, players);
 
         // Player table assignation
-        players = this.playerTableAssignments(table, players);
+        players = this.playerTableAssignments(players);
 
         // Attach players to observer list
         this.attachPlayerToObserverList(players);
@@ -133,16 +133,15 @@ public abstract class Poker extends Subject {
     /**
      * Assign player to the table
      *
-     * @param table   the game table
      * @param players the players
      * @return return a list of updated players
      */
-    protected List<Player> playerTableAssignments(Table table, List<Player> players) {
+    protected List<Player> playerTableAssignments(List<Player> players) {
         return players
                 .stream()
                 .map(player -> {
-                    player.setTable(table);
-                    table.addPlayerToTable(player);
+                    player.setTable(this.table);
+                    this.table.addPlayerToTable(player);
                     return player;
                 })
                 .collect(Collectors.toList());
