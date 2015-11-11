@@ -97,6 +97,9 @@ public abstract class Poker extends Subject {
         // Player table assignation
         players = this.playerTableAssignments(table, players);
 
+        // Attach players to observer list
+        this.attachPlayerToObserverList(players);
+
         // Chip distribution
         this.chipDistribution(players, initialAmount);
 
@@ -143,6 +146,11 @@ public abstract class Poker extends Subject {
                     return player;
                 })
                 .collect(Collectors.toList());
+    }
+
+
+    protected void attachPlayerToObserverList(List<Player> players) {
+        players.forEach(this::attach);
     }
 
     /**
