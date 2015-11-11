@@ -62,4 +62,8 @@ public class Table {
     public int hashCode() {
         return uuidTable.hashCode();
     }
+
+    public void setButton(Button button) {
+        this.button = button;
+    }
 }

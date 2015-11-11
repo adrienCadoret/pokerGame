@@ -1,5 +1,7 @@
 package fr.damienraymond.pocker;
 
+import fr.damienraymond.pocker.player.Player;
+import fr.damienraymond.pocker.player.PlayerSimple;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -12,7 +14,11 @@ public class PlayerTest {
     @Test
     public void testGetPlayerName() throws Exception {
         String name = "Damien";
-        Player player = new Player(name, new Table());
+        Player player = new PlayerSimple(name);
+        Button button = new Button(player);
+        Table table = new Table(button);
+        player.setTable(table);
+
         assertEquals(name, player.getPlayerName());
     }
 

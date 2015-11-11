@@ -2,18 +2,21 @@ package fr.damienraymond.pocker;
 
 import fr.damienraymond.pocker.card.Card;
 import fr.damienraymond.pocker.card.PlayerCyclicIterator;
+import fr.damienraymond.pocker.chip.Chip;
+import fr.damienraymond.pocker.chip.ChipUtils;
 import fr.damienraymond.pocker.player.Player;
 import fr.damienraymond.pocker.player.PlayerSimple;
 import fr.damienraymond.pocker.utils.RandomFactory;
 
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 /**
  * Created by damien on 23/10/2015.
  */
 public abstract class Poker {
+
+    private Button button;
 
     abstract protected Set<Chip> askPlayerToGive(Player p, int amountOfMoney);
     abstract protected void giveChipsToPlayer(Player player, Set<Chip> chips);
@@ -31,15 +34,11 @@ public abstract class Poker {
 
     protected Table table;
 
-    public void poker() throws PokerException {
-
-        Button button = new Button(null);
-
-        table = new Table(button);
+    public void poker(List<String> playerNames) throws PokerException {
 
         int initialAmount = 20_000;
 
-        List<Player> players = this.launch(table, button, initialAmount);
+        List<Player> players = this.launch(table, playerNames, initialAmount);
 
         if(players.isEmpty()) // TODO : check min player number
             throw new PokerException("Not enough players");
@@ -61,39 +60,66 @@ public abstract class Poker {
 
     }
 
-    protected List<Player> launch(Table table, Button button, int amount){
+    /**
+     * Manage the launch of the poker game
+     *  player creation
+     *  button distribution
+     *  chip distribution
+     * @param table the table to witch player are seated
+     * @param initialAmount the initial amount of the game
+     * @return a list of the players created
+     */
+    protected List<Player> launch(Table table, List<String> names, int initialAmount){
         // Player creation
-        final List<String> names = Arrays.asList("Damien", "Pierre", "Paul", "Marie", "Clément");
-        List<Player> players = this.playerCreation(table, names);
+        List<Player> players = this.playerCreation(names);
+
 
         // Button distribution
-        button = this.buttonDistribution(players, button);
+        this.buttonDistribution(players);
+        this.table.setButton(this.button);
 
-        this.chipDistribution(players, amount);
+        // Player table assignation
+        this.playerTableAssignement(table, players);
+
+        // Chip distribution
+        this.chipDistribution(players, initialAmount);
 
         return players;
     }
 
+    /**
+     * Way to distribute chips to players according a specific amont
+     * @param players the players to give chips
+     * @param amount the amount that represent chips to give to player
+     */
     protected void chipDistribution(List<Player> players, int amount) {
         // Call of getChipsSetFromAmount for each player, to prevent same memory pointer for chips
         // In the future it could be better to avoid this and to clone the chips set
         players.forEach(player -> this.giveChipsToPlayer(player, ChipUtils.getChipsSetFromAmount(amount)));
     }
 
-    private Button buttonDistribution(List<Player> players, Button button) {
+
+    private void buttonDistribution(List<Player> players) {
         int randomInt = RandomFactory.randInt(0, players.size() - 1);
         Player buttonOwner = players.get(randomInt);
-        return new Button(buttonOwner);
+        this.button = new Button(buttonOwner);
     }
 
 
-    protected List<Player> playerCreation(Table table, List<String> names){
+    protected List<Player> playerCreation(List<String> names){
         return names
                 .stream()
-                .map(name -> {
-                    Player p = new PlayerSimple(name, table); // TODO : change to factory and/or dep inj.
-                    table.addPlayerToTable(p);
-                    return p;
+                .map(PlayerSimple::new) // TODO : change to factory and/or dep inj.
+                .collect(Collectors.toList());
+    }
+
+    protected List<Player> playerTableAssignement(Table table, List<Player> players){
+        return players
+                .stream()
+                .map(player -> {
+                    player.setTable(table);
+                    table.addPlayerToTable(player);
+                    return player;
                 })
                 .collect(Collectors.toList());
     }
