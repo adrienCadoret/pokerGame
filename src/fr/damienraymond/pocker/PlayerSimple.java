@@ -36,9 +36,9 @@ public class PlayerSimple extends Player {
     public int play(int bigBlindAmount, int amountToCall, boolean playerCanCheck) {
 
         // List of the correct user inputs
-        List<Integer> correctValues = new ArrayList<>(UserInput.getChoices(bigBlindAmount, amountToCall, playerCanCheck).values());
+        List<Integer> correctValues = new ArrayList<>(PlayerInput.getChoices(bigBlindAmount, amountToCall, playerCanCheck).values());
 
-        return UserInput.readAndValidateUserInput(correctValues, "Choices ? " + UserInput.choicesToString(bigBlindAmount, amountToCall, playerCanCheck));
+        return UserInput.readAndValidateUserInput(correctValues, "Choices ? " + PlayerInput.choicesToString(bigBlindAmount, amountToCall, playerCanCheck));
     }
 
     public List<Card> shutdown() {

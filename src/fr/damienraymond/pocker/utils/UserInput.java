@@ -12,13 +12,13 @@ import java.util.stream.Collectors;
 public class UserInput {
 
 
-    public static Integer readInt(String question){
+    private static Integer readInt(String question){
         Scanner scanner = new Scanner(System.in);
         System.out.println(question);
         return scanner.nextInt();
     }
 
-    public static boolean isValidUserInput(List<Integer> correctValues, Integer userInput) {
+    private static boolean isValidUserInput(List<Integer> correctValues, Integer userInput) {
         return correctValues.contains(userInput);
     }
 
@@ -35,21 +35,4 @@ public class UserInput {
         return userInput;
     }
 
-    public static Map<String, Integer> getChoices(int bigBlindAmount, int amountToCall, boolean playerCanCheck) {
-        Map<String, Integer> choices = new HashMap<>();
-        if(playerCanCheck){
-            choices.put("Check", -1);
-        }
-        choices.put("Fold", 0);
-        choices.put("Call", amountToCall);
-        choices.put("Raise", amountToCall + bigBlindAmount);
-        return choices;
-    }
-
-    public static String choicesToString(int bigBlindAmount, int amountToCall, boolean playerCanCheck) {
-        Map<String, Integer> choices = UserInput.getChoices(bigBlindAmount, amountToCall, playerCanCheck);
-        return choices.entrySet().stream()
-                .map(e -> e.getKey() + " : " + Integer.toString(e.getValue()))
-                .collect(Collectors.joining(", "));
-    }
 }
