@@ -1,8 +1,8 @@
-package fr.damienraymond.pocker;
+package fr.damienraymond.pocker.player;
 
+import fr.damienraymond.pocker.*;
 import fr.damienraymond.pocker.card.Card;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 

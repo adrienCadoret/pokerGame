@@ -1,11 +1,11 @@
-package fr.damienraymond.pocker;
+package fr.damienraymond.pocker.player;
 
-import com.sun.tools.doclets.formats.html.SourceToHTMLConverter;
+import fr.damienraymond.pocker.Chip;
+import fr.damienraymond.pocker.Table;
 import fr.damienraymond.pocker.card.Card;
 import fr.damienraymond.pocker.utils.UserInput;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * Created by damien on 04/11/2015.

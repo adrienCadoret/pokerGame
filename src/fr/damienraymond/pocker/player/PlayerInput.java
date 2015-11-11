@@ -1,4 +1,4 @@
-package fr.damienraymond.pocker;
+package fr.damienraymond.pocker.player;
 
 import fr.damienraymond.pocker.utils.UserInput;
 
