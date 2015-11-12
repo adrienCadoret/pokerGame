@@ -34,7 +34,7 @@ public class ChipStack {
      */
     public int give(int amount) throws IllegalArgumentException {
 
-        Logger.trace("Chip stack : " + getMoneyAmount());
+        Logger.trace("Chip stack money amount: " + getMoneyAmount());
 
         if (amount > getMoneyAmount())
             throw new IllegalArgumentException("Cannot give this amount of money");
