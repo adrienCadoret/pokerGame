@@ -12,7 +12,8 @@ public class Button {
 
     public Button(Player buttonOwnerPlayer) {
         this.buttonOwnerPlayer = buttonOwnerPlayer;
-        Logger.info(buttonOwnerPlayer.getPlayerName() + " is the button owner");
+        if(buttonOwnerPlayer != null)
+            Logger.info(buttonOwnerPlayer.getPlayerName() + " is the button owner");
     }
 
     /**
