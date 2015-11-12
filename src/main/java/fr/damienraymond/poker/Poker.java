@@ -1,6 +1,5 @@
 package fr.damienraymond.poker;
 
-import ch.qos.logback.classic.Logger;
 import fr.damienraymond.poker.card.Card;
 import fr.damienraymond.poker.card.PlayerCyclicIterator;
 import fr.damienraymond.poker.chip.Chip;
@@ -8,8 +7,8 @@ import fr.damienraymond.poker.chip.ChipUtils;
 import fr.damienraymond.poker.observer.Subject;
 import fr.damienraymond.poker.player.Player;
 import fr.damienraymond.poker.player.PlayerSimple;
+import fr.damienraymond.poker.utils.Logger;
 import fr.damienraymond.poker.utils.RandomFactory;
-import org.slf4j.LoggerFactory;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -19,7 +18,7 @@ import java.util.stream.Collectors;
  */
 public abstract class Poker extends Subject {
 
-    private Logger logger = (Logger) LoggerFactory.getLogger("Poker");
+
     protected Table table;
     private Button button;
     private int amountToCall;
@@ -46,28 +45,35 @@ public abstract class Poker extends Subject {
 
     public void poker(List<String> playerNames) throws PokerException {
 
-        logger.info("Welcome ! Let's play Poker !");
+        Logger.info("Welcome ! Let's play Poker !");
 
         int initialAmount = 20_000;
 
+        Logger.info("Launching...");
         List<Player> players = this.launch(table, playerNames, initialAmount);
+        Logger.info("Successful launch...");
 
         if (players.isEmpty()) // TODO : check min player number
             throw new PokerException("Not enough players");
 
         final PlayerCyclicIterator playerCyclicIterator = new PlayerCyclicIterator(players);
 
+        Logger.info("Blinds");
         this.blinds(playerCyclicIterator, initialAmount);
 
-
+        Logger.info("Pre-flop");
         this.preFlop(playerCyclicIterator);
 
+        Logger.info("Flop");
         this.flop(playerCyclicIterator, button.getButtonOwnerPlayer(), 3); // get rid of the 3 here, not business
 
+        Logger.info("Turn");
         this.turn(playerCyclicIterator, button.getButtonOwnerPlayer());
 
+        Logger.info("River");
         this.river(playerCyclicIterator, button.getButtonOwnerPlayer());
 
+        Logger.info("Shutdown");
         this.shutdown(playerCyclicIterator, button);
 
     }

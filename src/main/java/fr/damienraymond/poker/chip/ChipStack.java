@@ -1,5 +1,7 @@
 package fr.damienraymond.poker.chip;
 
+import fr.damienraymond.poker.utils.Logger;
+
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -31,6 +33,8 @@ public class ChipStack {
      * @throws IllegalArgumentException : if the player cannot pay it throws an exception
      */
     public int give(int amount) throws IllegalArgumentException {
+
+        Logger.trace("Chip stack : " + getMoneyAmount());
 
         if (amount > getMoneyAmount())
             throw new IllegalArgumentException("Cannot give this amount of money");
