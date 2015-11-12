@@ -29,7 +29,7 @@ public abstract class Poker extends Subject {
 
     abstract protected Set<Chip> askPlayerToGive(Player p, int amountOfMoney);
 
-    abstract protected void giveChipsToPlayer(Player player, Set<Chip> chips);
+    abstract protected void giveChipsToPlayer(Player player, List<Chip> chips);
 
     abstract protected void giveCardToPlayer(Player player, List<Card> cards);
 
@@ -159,9 +159,9 @@ public abstract class Poker extends Subject {
      * @param amount  the amount that represent chips to give to player
      */
     protected void chipDistribution(List<Player> players, int amount) {
-        // Call of getChipsSetFromAmount for each player, to prevent same memory pointer for chips
+        // Call of getChipsListFromAmount for each player, to prevent same memory pointer for chips
         // In the future it could be better to avoid this and to clone the chips set
-        players.forEach(player -> this.giveChipsToPlayer(player, ChipUtils.getChipsSetFromAmount(amount)));
+        players.forEach(player -> this.giveChipsToPlayer(player, ChipUtils.getChipsListFromAmount(amount)));
     }
 
     /**
@@ -228,6 +228,8 @@ public abstract class Poker extends Subject {
         while (goOn) {
             // Get next player around the table
             Player currentPlayer = players.next();
+
+            Logger.info("Current player " + currentPlayer);
 
             // Check if the current player can play (not folded, and have enough money)
             if (players.thisPlayerHasFolded(currentPlayer) && currentPlayer.canPay()) {

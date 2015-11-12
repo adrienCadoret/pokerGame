@@ -18,8 +18,9 @@ public class PokerSimple extends Poker {
     }
 
     @Override
-    protected void giveChipsToPlayer(Player player, Set<Chip> chips) {
-        player.receiveChipSet(chips);
+    protected void giveChipsToPlayer(Player player, List<Chip> chips) {
+        Logger.trace("giveChipsToPlayer(" + player.getPlayerName() + ", " + chips + ")");
+        player.receiveChipList(chips);
     }
 
     @Override

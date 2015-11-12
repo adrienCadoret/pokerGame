@@ -1,9 +1,6 @@
 package fr.damienraymond.pocker.chip;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -11,7 +8,7 @@ import java.util.stream.IntStream;
  * Created by damien on 11/11/2015.
  */
 public class ChipUtils {
-    public static Set<Chip> getChipsSetFromAmount(final int amount){
+    public static List<Chip> getChipsListFromAmount(final int amount){
         List<Integer> values = Chip.getAvailableValues();
         values = values
                 .stream()
@@ -22,12 +19,12 @@ public class ChipUtils {
         Collections.sort(values);
         Collections.reverse(values);
 
-        Set<Chip> chips = new HashSet<>();
+        List<Chip> chips = new LinkedList<>();
 
         int numberOfChipForValue;
         int amountLoop = amount;
         for (Integer value : values) {
-            numberOfChipForValue = amountLoop % value;
+            numberOfChipForValue = amountLoop / value;
             IntStream.range(0, numberOfChipForValue)
                     .forEach(e -> chips.add(Chip.valueOf(value)));
             amountLoop = amountLoop % value;

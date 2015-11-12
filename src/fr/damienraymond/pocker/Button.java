@@ -1,6 +1,7 @@
 package fr.damienraymond.pocker;
 
-import fr.damienraymond.pocker.player.Player;
+import fr.damienraymond.poker.player.Player;
+import fr.damienraymond.poker.utils.Logger;
 
 /**
  * Created by damien on 01/10/2015.
@@ -11,6 +12,7 @@ public class Button {
 
     public Button(Player buttonOwnerPlayer) {
         this.buttonOwnerPlayer = buttonOwnerPlayer;
+        Logger.info(buttonOwnerPlayer.getPlayerName() + " is the button owner");
     }
 
     /**

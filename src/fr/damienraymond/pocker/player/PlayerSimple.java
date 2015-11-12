@@ -29,8 +29,8 @@ public class PlayerSimple extends Player {
         return new HashSet<>();
     }
 
-    public void receiveChipSet(Set<Chip> chips) {
-        chips.forEach(chips::add);
+    public void receiveChipList(List<Chip> chips) {
+        chips.forEach(this.chips::addChip);
     }
 
     public void receiveCards(List<Card> cards){

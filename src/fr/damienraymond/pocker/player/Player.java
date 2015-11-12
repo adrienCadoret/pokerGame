@@ -1,10 +1,11 @@
 package fr.damienraymond.pocker.player;
 
-import fr.damienraymond.pocker.*;
-import fr.damienraymond.pocker.card.Card;
-import fr.damienraymond.pocker.chip.Chip;
-import fr.damienraymond.pocker.chip.ChipStack;
-import fr.damienraymond.pocker.observer.Observer;
+import fr.damienraymond.poker.*;
+import fr.damienraymond.poker.card.Card;
+import fr.damienraymond.poker.chip.Chip;
+import fr.damienraymond.poker.chip.ChipStack;
+import fr.damienraymond.poker.observer.Observer;
+import fr.damienraymond.poker.utils.Logger;
 
 import java.util.HashMap;
 import java.util.List;
@@ -31,6 +32,7 @@ public abstract class Player implements Observer {
     }
 
     protected void init(String playerName, Optional<Table> table){
+        Logger.trace("Create player " + playerName);
         this.playerName = playerName;
         this.table = table;
         this.hand = new HandConcrete();
@@ -71,7 +73,7 @@ public abstract class Player implements Observer {
 
     public abstract Set<Chip> giveChip(int amount);
 
-    public abstract void receiveChipSet(Set<Chip> chips);
+    public abstract void receiveChipList(List<Chip> chips);
 
     public abstract void receiveCards(List<Card> cards);
 
