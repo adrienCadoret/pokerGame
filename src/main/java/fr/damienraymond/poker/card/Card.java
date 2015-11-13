@@ -38,4 +38,9 @@ public class Card {
         result = 31 * result + getLevel().hashCode();
         return result;
     }
+
+    @Override
+    public String toString() {
+        return level + "-" + color;
+    }
 }

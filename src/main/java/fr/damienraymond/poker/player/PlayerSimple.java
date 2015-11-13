@@ -39,11 +39,18 @@ public class PlayerSimple extends Player {
     }
 
     protected String getGameInfos(){
-        String res = "GameInfos [";
-        res += table.map(t -> {
-            return t.getPlayers().stream().map(Player::toString);
+        StringBuilder res = new StringBuilder();
+        res.append("GameInfos [");
+        table.ifPresent(t -> {
+            res.append("Chip values : ")
+                    .append(this.chips.getMoneyAmount())
+                    .append(" | ");
+            res.append("Cards(")
+                    .append(this.hand.toString())
+                    .append(")");
         });
-        return res + "]";
+        res.append("]");
+        return res.toString();
     }
 
     public int play(int bigBlindAmount, int amountToCall, boolean playerCanCheck) {
