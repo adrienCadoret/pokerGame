@@ -1,6 +1,7 @@
 package fr.damienraymond.poker;
 
 import fr.damienraymond.poker.card.Card;
+import fr.damienraymond.poker.card.CardPacket;
 import fr.damienraymond.poker.card.PlayerCyclicIterator;
 import fr.damienraymond.poker.chip.Chip;
 import fr.damienraymond.poker.chip.ChipUtils;
@@ -21,10 +22,11 @@ public abstract class Poker extends Subject {
 
     protected Table table;
     private Button button;
+    private CardPacket cardPacket;
+    private Player playerHasPlayedFirst = null;
     private int amountToCall;
     private int bigBlindAmount;
     private int playerCanPlayNumber;
-    private Player playerHasPlayedFirst = null;
     private int hasPlayPlayerNumber;
 
     abstract protected Set<Chip> askPlayerToGive(Player p, int amountOfMoney);
@@ -98,6 +100,8 @@ public abstract class Poker extends Subject {
         // Player creation
         List<Player> players = this.playerCreation(names);
 
+        // Card distribution
+        this.cardDistribution(players);
 
         // Button distribution
         this.buttonDistribution(players);
@@ -112,7 +116,23 @@ public abstract class Poker extends Subject {
         // Chip distribution
         this.chipDistribution(players, initialAmount);
 
+
         return players;
+    }
+
+    /**
+     * Distribute cards to players
+     * @param players player list
+     */
+    protected void cardDistribution(List<Player> players){
+        // Init card packet
+        cardPacket = new CardPacket();
+
+        // For each player give 2 cards
+        players.forEach(player -> {
+            List<Card> cards = Arrays.asList(cardPacket.popCard(), cardPacket.popCard());
+            this.giveCardToPlayer(player, cards);
+        });
     }
 
     /**
