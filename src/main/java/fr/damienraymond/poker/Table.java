@@ -56,13 +56,8 @@ public class Table {
     }
 
     public void addCardOnTheTable(){
-        try {
-            Card c = cardPacket.popCard();
-            cardsOnTheTable.add(c);
-        } catch (CardPacketException e) {
-            e.printStackTrace();
-        }
-
+        Card c = cardPacket.popCard();
+        cardsOnTheTable.add(c);
     }
 
     public void initCardOnTheTable(){
