@@ -36,19 +36,4 @@ public class CardPacketTest {
         assertNotEquals(cardsPermuted.toString(), new CardPacket().permute(cardsPermuted).toString());
     }
 
-    @org.junit.Test(expected = CardPacketException.class)
-    public void testPopCard() throws CardPacketException {
-        List<Level> levels = new ArrayList<>(EnumSet.allOf(Level.class));
-        List<Color> colors = new ArrayList<>(EnumSet.allOf(Color.class));
-        List<Card> cards = new CardPacket().cartesianProductToProduceCardPacket(levels, colors);
-        CardPacket cp = new CardPacket();
-        cp.cards = cards.iterator();
-
-
-        int cardNumber = levels.size() * colors.size();
-        for (int i = 0; i < cardNumber; i++) {
-            cp.popCard();
-        }
-        cp.popCard();
-    }
 }

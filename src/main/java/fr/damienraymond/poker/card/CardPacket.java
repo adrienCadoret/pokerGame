@@ -70,20 +70,18 @@ public class CardPacket {
 
     /**
      * Manage errors when no card is left on the packet
-     * @throws CardPacketException
      */
-    protected void thereIsNoCardLeftInThePacket() throws CardPacketException {
-        // It throws an exception now but I think that, in the future, it could be a good idea to refill the packet. But I'am not sure that it's one of the rules.
-        throw new CardPacketException("Empty packet");
+    protected void thereIsNoCardLeftInThePacket() {
+        // Refill the packet
+        this.cards = this.generateCardPacket(defaultPermutationNumber);
     }
 
 
     /**
      * Get the card in the top of the packet
      * @return the card in the top of the packet
-     * @throws CardPacketException
      */
-    public Card popCard() throws CardPacketException {
+    public Card popCard() {
         if (! cards.hasNext())
             this.thereIsNoCardLeftInThePacket();
         return cards.next();
