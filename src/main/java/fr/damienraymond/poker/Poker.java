@@ -271,7 +271,6 @@ public abstract class Poker extends Subject {
      */
 
 
-
     protected void flop(PlayerCyclicIterator players, int numberOfCardToReveal) {
         this.betTour(players, numberOfCardToReveal);
     }
@@ -359,7 +358,6 @@ public abstract class Poker extends Subject {
             if(amountThePlayerGive == amountToCall){
                 this.manageCallChoice(currentPlayer);
             }
-
             amountToCall = amountThePlayerGive;
         }
     }
