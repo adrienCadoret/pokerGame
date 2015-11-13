@@ -3,6 +3,7 @@ package fr.damienraymond.poker.player;
 import fr.damienraymond.poker.chip.Chip;
 import fr.damienraymond.poker.Table;
 import fr.damienraymond.poker.card.Card;
+import fr.damienraymond.poker.utils.Logger;
 import fr.damienraymond.poker.utils.UserInput;
 
 import java.util.*;
@@ -47,10 +48,12 @@ public class PlayerSimple extends Player {
 
     public int play(int bigBlindAmount, int amountToCall, boolean playerCanCheck) {
 
-        System.out.println(this.getGameInfos());
+        Logger.info(this.getGameInfos());
 
         // List of the correct user inputs
         List<Integer> correctValues = new ArrayList<>(PlayerInput.getChoices(bigBlindAmount, amountToCall, playerCanCheck).values());
+
+        Logger.trace("Correct values : " + correctValues);
 
         return UserInput.readAndValidateUserInput(correctValues, "Choices ? " + PlayerInput.choicesToString(bigBlindAmount, amountToCall, playerCanCheck));
     }

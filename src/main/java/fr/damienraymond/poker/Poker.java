@@ -240,10 +240,10 @@ public abstract class Poker extends Subject {
             // Get next player around the table
             Player currentPlayer = players.next();
 
-            Logger.info("Current player " + currentPlayer);
+            Logger.info("Current player " + currentPlayer.getPlayerName());
 
             // Check if the current player can play (not folded, and have enough money)
-            if (players.thisPlayerHasFolded(currentPlayer) && currentPlayer.canPay()) {
+            if (! players.thisPlayerHasFolded(currentPlayer) && currentPlayer.canPay()) {
 
                 // Ask to user the amount he wants to give
                 //  O                             -> fold
@@ -301,8 +301,10 @@ public abstract class Poker extends Subject {
             // Get next player around the table
             Player currentPlayer = players.next();
 
+            Logger.info("Current player " + currentPlayer.getPlayerName());
+
             // Check if the current player can play (not folded, and have enough money)
-            if (players.thisPlayerHasFolded(currentPlayer) && currentPlayer.canPay()) {
+            if (! players.thisPlayerHasFolded(currentPlayer) && currentPlayer.canPay()) {
 
 
                 // Ask to user the amount he wants to give

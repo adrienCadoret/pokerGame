@@ -26,9 +26,9 @@ public class UserInput {
             userInput = UserInput.readInt(question);
             goOn = isValidUserInput(correctValues, userInput);
             if(! goOn){
-                System.out.println("Please insert correct answer");
+                Logger.error("Please insert correct answer");
             }
-        }while (goOn);
+        }while (! goOn);
         return userInput;
     }
 

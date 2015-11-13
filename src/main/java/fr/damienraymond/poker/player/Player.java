@@ -44,6 +44,7 @@ public abstract class Player implements Observer {
         return playerName;
     }
 
+
     /**
      * Equals on table and player name
      * (e.g considering one table, all player has different names)
@@ -57,15 +58,15 @@ public abstract class Player implements Observer {
 
         Player player = (Player) o;
 
-        if (!table.equals(player.table)) return false;
-        return playerName.equals(player.playerName);
+        if (table != null ? !table.equals(player.table) : player.table != null) return false;
+        return !(getPlayerName() != null ? !getPlayerName().equals(player.getPlayerName()) : player.getPlayerName() != null);
 
     }
 
     @Override
     public int hashCode() {
-        int result = table.hashCode();
-        result = 31 * result + playerName.hashCode();
+        int result = table != null ? table.hashCode() : 0;
+        result = 31 * result + (getPlayerName() != null ? getPlayerName().hashCode() : 0);
         return result;
     }
 
