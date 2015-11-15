@@ -2,10 +2,10 @@ package fr.damienraymond.poker.card;
 
 import fr.damienraymond.poker.player.Player;
 import fr.damienraymond.poker.utils.CyclicIterator;
+import fr.damienraymond.poker.utils.Logger;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.concurrent.ExecutionException;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -15,6 +15,7 @@ import java.util.stream.Collectors;
 public class PlayerCyclicIterator extends CyclicIterator<Player> {
 
     private Map<Player, Boolean> foldedPlayer;
+    private Map<Player, Integer> amountOnTheTableForEachPlayer;
 
     public PlayerCyclicIterator(List<Player> list) {
         super(list);
@@ -33,14 +34,30 @@ public class PlayerCyclicIterator extends CyclicIterator<Player> {
         return this.foldedPlayer.getOrDefault(p, false);
     }
 
-    public void cycleUntilAfterThisPlayer(Player p) {
-        Player currentPlayer;
-        do {
-            currentPlayer = (Player) this.next();
-        } while (! currentPlayer.equals(p));
+    public void initAmountOnTheTableForEachPlayer(){
+        this.amountOnTheTableForEachPlayer = new HashMap<>();
+    }
 
-        // Consume one more to go after Player p
-        this.next();
+    public void addAmountOnTheTableForPlayer(Player p, int amount){
+        int previousAmount = this.getAmountOnTheTableForPlayer(p).orElse(0);
+        this.amountOnTheTableForEachPlayer.put(p, previousAmount + amount);
+    }
+
+    public Optional<Integer> getAmountOnTheTableForPlayer(Player p){
+        Integer amount = this.amountOnTheTableForEachPlayer.get(p);
+        if(amount == null){
+            return Optional.empty();
+        }else{
+            return Optional.of(amount);
+        }
+    }
+
+    public boolean testIfAllPlayersHasTheSameAmontOnTheTable(){
+        return new HashSet<Integer>(this.amountOnTheTableForEachPlayer.values()).size() == 1;
+    }
+
+    public void cycleUntilAfterThisPlayer(Player player) {
+        this.dropWhile(p -> ! p.equals(player));
     }
 
     @Override

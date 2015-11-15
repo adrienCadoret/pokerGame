@@ -209,7 +209,10 @@ public abstract class Poker extends Subject {
         int smallBlindAmount = this.determineBlindAmounts(initialAmount);
 
         // Go to the button owner player
-        players.cycleUntilAfterThisPlayer(button.getButtonOwnerPlayer());
+        players.cycleUntilAfterThisPlayer(button.buttonOwnerPlayer);
+
+        // Init amount on the table for each player
+        players.initAmountOnTheTableForEachPlayer();
 
         this.askPlayersToGiveBlinds(players, smallBlindAmount, bigBlindAmount);
     }
@@ -232,8 +235,13 @@ public abstract class Poker extends Subject {
      * @param bigBlind the big blind amount
      */
     protected void askPlayersToGiveBlinds(PlayerCyclicIterator players, int smallBlind, int bigBlind) {
-        this.askPlayerToGive(players.next(), smallBlind);
-        this.askPlayerToGive(players.next(), bigBlind);
+        Player p = players.next();
+        players.addAmountOnTheTableForPlayer(p, smallBlind);
+        this.askPlayerToGive(p, smallBlind);
+
+        p = players.next();
+        players.addAmountOnTheTableForPlayer(p, bigBlind);
+        this.askPlayerToGive(p, bigBlind);
     }
 
 
@@ -249,7 +257,7 @@ public abstract class Poker extends Subject {
         this.beforePreFlop(players);
 
         boolean enableChecks = false;
-        this.betPlayerInteractionTour(players, enableChecks);
+        this.betPlayerInteractionTour(players, enableChecks, Optional.of(1));
     }
 
     protected void beforePreFlop(PlayerCyclicIterator players){
@@ -286,7 +294,7 @@ public abstract class Poker extends Subject {
         this.cycleUntilAfterTheButtonPlayer(players);
 
         boolean enableChecks = true;
-        this.betPlayerInteractionTour(players, enableChecks);
+        this.betPlayerInteractionTour(players, enableChecks, Optional.empty());
     }
 
     protected void revealNCard(int numberOfCardToReveal){
@@ -299,11 +307,11 @@ public abstract class Poker extends Subject {
         players.cycleUntilAfterThisPlayer(this.button.getButtonOwnerPlayer());
     }
 
-    protected void betPlayerInteractionTour(PlayerCyclicIterator players, boolean enableCheck){
+    protected void betPlayerInteractionTour(PlayerCyclicIterator players, boolean enableCheck, Optional<Integer> hasPlayPlayerNumberOption){
 
         // Initialize vars
         playerHasPlayedFirst = null; // Restart var playerHasPlayedFirst (beginning of flop, turn, river)
-        hasPlayPlayerNumber  = 0;    // number of player that have to play. re-initialised on raises
+        hasPlayPlayerNumber  = hasPlayPlayerNumberOption.orElse(0);    // number of player that have to play. re-initialised on raises
         boolean goOn = true;
 
         while (goOn) {
@@ -313,18 +321,19 @@ public abstract class Poker extends Subject {
             this.bet(players, currentPlayer, enableCheck);
 
             // Check end loop condition
-            goOn = hasPlayPlayerNumber < playerCanPlayNumber; // dummy for the moment. To be checked
+            goOn = ! players.testIfAllPlayersHasTheSameAmontOnTheTable(); // dummy for the moment. To be checked
         }
     }
 
     protected void bet(PlayerCyclicIterator players, Player currentPlayer, boolean enableCheck){
 
         Logger.info("================   NEXT PLAYER   ================");
-        Logger.info("Current player " + players.toString(currentPlayer));
+        Logger.info("Current player : " + players.toString(currentPlayer));
+        Logger.info("CardsOnTheTable : " + this.table.getCardsOnTheTable());
 
         // Check if the current player can play (not folded, and have enough money)
         if (playerCanPlay(players, currentPlayer)) {
-            int amountThePlayerGive = this.playerChoice(currentPlayer, enableCheck);
+            int amountThePlayerGive = this.playerChoice(players, currentPlayer, enableCheck);
 
             this.managePlayerChoice(players, currentPlayer, amountThePlayerGive, enableCheck);
         }
@@ -334,13 +343,17 @@ public abstract class Poker extends Subject {
         return ! players.thisPlayerHasFolded(p) && p.canPay();
     }
 
-    protected int playerChoice(Player p, boolean enableCheck){
+    protected int playerChoice(PlayerCyclicIterator players, Player p, boolean enableCheck){
+        // If the player has already put amount on the table (in case of small blind for example)
+        int amountToCall = players.getAmountOnTheTableForPlayer(p).orElse(this.amountToCall);
         return this.askThePlayerToPlay(p, bigBlindAmount, amountToCall, enableCheck);
     }
 
     protected void managePlayerChoice(PlayerCyclicIterator players, Player currentPlayer, int amountThePlayerGive, boolean enableCheck){
         final int FOLD  = 0;
         final int CHECK = -1;
+
+        players.addAmountOnTheTableForPlayer(currentPlayer, amountThePlayerGive);
 
         // Check if the player wants to fold
         if(amountThePlayerGive == FOLD){ // fold

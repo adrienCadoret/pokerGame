@@ -29,6 +29,10 @@ public class Table {
         this.cardPacket = new CardPacket();
     }
 
+    public List<Card> getCardsOnTheTable() {
+        return cardsOnTheTable;
+    }
+
     public List<Player> getPlayers() {
         return players;
     }
