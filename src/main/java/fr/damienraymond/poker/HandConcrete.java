@@ -3,6 +3,7 @@ package fr.damienraymond.poker;
 import fr.damienraymond.poker.card.Card;
 import fr.damienraymond.poker.card.Color;
 import fr.damienraymond.poker.card.Level;
+import fr.damienraymond.poker.utils.HandTypeComparator;
 import fr.damienraymond.poker.utils.HandUtils;
 
 import java.util.*;
@@ -11,7 +12,7 @@ import java.util.stream.Collectors;
 /**
  * Created by damien on 02/10/2015.
  */
-public class HandConcrete implements Hand, Comparable<Hand> {
+public class HandConcrete implements Hand, Comparable<HandConcrete> {
 
     protected Map<Integer, Card> cards;
 
@@ -66,14 +67,49 @@ public class HandConcrete implements Hand, Comparable<Hand> {
     }
 
     @Override
-    public int compareTo(Hand o) {
-        return 0;
+    public int compareTo(HandConcrete c) {
+        HandType handTypeOfThis   = this.getHandType();
+        HandType handTypeOfOParam = c.getHandType();
+
+        int res;
+        // If both hand are basics hand, let's take the best card
+        if(handTypeOfOParam == HandType.BASIC_HAND && handTypeOfThis == HandType.BASIC_HAND){
+            Card highestCardOfThis  = HandUtils.getHightestCard(this.getCards());
+            Card highestCardOfParam = HandUtils.getHightestCard(this.getCards());
+            res = highestCardOfThis.compareTo(highestCardOfParam);
+        }else{
+            HandTypeComparator handTypeComparator = new HandTypeComparator();
+            res = handTypeComparator.compare(handTypeOfThis, handTypeOfOParam);
+        }
+        return res;
+    }
+
+    public HandType getHandType(){
+        HandType handType = HandType.BASIC_HAND;
+        if(this.isPair()){
+            handType = HandType.PAIR;
+        }else if(this.isDoublePair()){
+            handType = HandType.DOUBLE_PAIR;
+        }else if(this.isThreeOfAKind()){
+            handType = HandType.THREE_OF_A_KIND;
+        }else if(this.isStraight()){
+            handType = HandType.STRAIGHT;
+        }else if(this.isFlush()){
+            handType = HandType.FLUSH;
+        }else if(this.isFullHouse()){
+            handType = HandType.FULL_HOUSE;
+        }else if(this.isFourOfAKind()){
+            handType = HandType.FOUR_OF_A_KIND;
+        }else if(this.isStraightFlush()){
+            handType = HandType.STRAIGHT;
+        }else if(this.isRoyalFlush()){
+            handType = HandType.ROYAL_FLUSH;
+        }
+        return handType;
     }
 
 
-    public Card getHightestCard(Card c){
-        return Collections.max(getCards());
-    }
+
 
     public boolean isPair(){
         Map<Level, List<Card>> levelListMap = HandUtils.groupBySameCardLevel(getCards());

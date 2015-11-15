@@ -4,6 +4,7 @@ import fr.damienraymond.poker.card.Card;
 import fr.damienraymond.poker.card.Color;
 import fr.damienraymond.poker.card.Level;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -12,6 +13,10 @@ import java.util.stream.Collectors;
  * Created by damien on 15/11/2015.
  */
 public class HandUtils {
+
+    public static Card getHightestCard(List<Card> cards){
+        return Collections.max(cards);
+    }
 
     public static Map<Level, List<Card>> groupBySameCardLevel(List<Card> cards){
         return cards.stream().collect(Collectors.groupingBy(Card::getLevel));
