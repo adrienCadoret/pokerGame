@@ -31,5 +31,19 @@ public class CardTest {
         assertNotEquals(card2, card3);
         assertNotEquals(card1, card3);
     }
-    
+
+    @Test
+    public void testCompareTo1() throws Exception {
+        assertTrue(new Card(Level.AS, Color.CLUB).compareTo(new Card(Level.QUEEN, Color.CLUB)) > 0);
+    }
+
+    @Test
+    public void testCompareTo2() throws Exception {
+        assertTrue(new Card(Level.FIVE, Color.CLUB).compareTo(new Card(Level.SEVEN, Color.CLUB)) < 0);
+    }
+
+    @Test
+    public void testCompareTo3() throws Exception {
+        assertTrue(new Card(Level.AS, Color.CLUB).compareTo(new Card(Level.AS, Color.CLUB)) == 0);
+    }
 }

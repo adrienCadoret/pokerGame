@@ -3,7 +3,7 @@ package fr.damienraymond.poker.card;
 /**
  * Created by damien on 02/10/2015.
  */
-public class Card {
+public class Card implements Comparable<Card> {
 
     private Color color;
     private Level level;
@@ -42,5 +42,10 @@ public class Card {
     @Override
     public String toString() {
         return level + "-" + color;
+    }
+
+    @Override
+    public int compareTo(Card o) {
+        return this.level.compareTo(o.getLevel());
     }
 }
