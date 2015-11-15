@@ -319,7 +319,8 @@ public abstract class Poker extends Subject {
 
     protected void bet(PlayerCyclicIterator players, Player currentPlayer, boolean enableCheck){
 
-        Logger.info("Current player " + currentPlayer.getPlayerName());
+        Logger.info("================   NEXT PLAYER   ================");
+        Logger.info("Current player " + players.toString(currentPlayer));
 
         // Check if the current player can play (not folded, and have enough money)
         if (playerCanPlay(players, currentPlayer)) {

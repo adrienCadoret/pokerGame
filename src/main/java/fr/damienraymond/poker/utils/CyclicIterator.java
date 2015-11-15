@@ -8,7 +8,7 @@ import java.util.function.Predicate;
  */
 public class CyclicIterator<T> implements Iterator<T> {
 
-    private final List<T> list;
+    protected final List<T> list;
     private Iterator<T> iterator;
 
 

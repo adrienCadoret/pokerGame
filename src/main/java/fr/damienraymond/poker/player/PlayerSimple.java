@@ -78,4 +78,9 @@ public class PlayerSimple extends Player {
         //  but I bet that later it will be
         table.ifPresent(t -> table = Optional.of(t.update()));
     }
+
+    @Override
+    public String toString() {
+        return this.playerName;
+    }
 }

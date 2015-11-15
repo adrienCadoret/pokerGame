@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 /**
  * Created by damien on 01/11/2015.
@@ -48,5 +49,19 @@ public class PlayerCyclicIterator extends CyclicIterator<Player> {
         // because of the covariance of types
         // e.g : on inheritance, super.dropWhile return type is not replaced by PlayerCyclicIterator, see https://en.wikipedia.org/wiki/Covariant_return_type
         return (PlayerCyclicIterator) super.dropWhile(predicate);
+    }
+
+    public String toString(Player currentPlayer) {
+        return this.list.stream().map(player -> {
+            String res = "";
+            if(currentPlayer.equals(player)){
+                res += "{";
+                res += player;
+                res += "}";
+            }else{
+                res += player;
+            }
+            return res;
+        }).collect(Collectors.joining(", "));
     }
 }
