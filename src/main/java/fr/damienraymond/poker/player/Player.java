@@ -35,7 +35,7 @@ public abstract class Player implements Observer {
         Logger.trace("Create player " + playerName);
         this.playerName = playerName;
         this.table = table;
-        this.hand = new HandConcrete();
+        this.hand = new Hand();
         this.chips = new ChipStack(new HashMap<>());
     }
 

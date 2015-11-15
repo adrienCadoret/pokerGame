@@ -14,8 +14,8 @@ import java.util.stream.Collectors;
  */
 public class HandUtils {
 
-    public static Card getHightestCard(List<Card> cards){
-        return Collections.max(cards);
+    public static Level getHighestLevel(List<Card> cards){
+        return Collections.max(cards).getLevel();
     }
 
     public static Map<Level, List<Card>> groupBySameCardLevel(List<Card> cards){
@@ -32,7 +32,7 @@ public class HandUtils {
 
     public static boolean isSequence(List<Card> cards){
         List<Integer> sortedLevels = cards.stream().map(c -> c.getLevel().getValue()).sorted().collect(Collectors.toList());
-        return (sortedLevels.get(4) - sortedLevels.get(0)) == 5;
+        return (sortedLevels.get(4) - sortedLevels.get(0)) == 4;
     }
 
     public static long getNumberOfSameLevelCard(List<Card> cards, int number){

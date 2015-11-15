@@ -14,7 +14,7 @@ public class HandTest {
 
     @Test
     public void testAddCard() throws Exception {
-        HandOld hand = new Hand();
+        Hand hand = new Hand();
         hand = hand.addCard(new Card(Level.AS, Color.CLUB));
         assertEquals(((Hand) hand).cards.size(), 1);
         hand = hand.addCard(new Card(Level.FIVE, Color.HEART));
@@ -36,7 +36,7 @@ public class HandTest {
 
     @Test
     public void testGet() throws Exception {
-        HandOld hand = new Hand()
+        Hand hand = new Hand()
                 .addCard(new Card(Level.AS, Color.CLUB));
         assertEquals(hand.getCardNumber(), 1);
         assertEquals(hand.get(0), new Card(Level.AS, Color.CLUB));
@@ -50,7 +50,7 @@ public class HandTest {
 
     @Test
     public void testGetCardNumber() throws Exception {
-        HandOld hand = new Hand();
+        Hand hand = new Hand();
         hand = hand.addCard(new Card(Level.AS, Color.CLUB))
                 .addCard(new Card(Level.FIVE, Color.HEART))
                 .addCard(new Card(Level.AS, Color.DIAMOND))
