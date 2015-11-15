@@ -69,14 +69,19 @@ public class Hand implements Comparable<Hand> {
         HandType handTypeOfThis   = this.getHandType();
         HandType handTypeOfOParam = c.getHandType();
 
-        int res;
+        int res = 0;
         // If both hand are basics hand, let's take the best card
         if(handTypeOfOParam == HandType.BASIC_HAND && handTypeOfThis == HandType.BASIC_HAND){
             Level highestLevelOfThis  = HandUtils.getHighestLevel(this.getCards());
             Level highestLevelOfParam = HandUtils.getHighestLevel(this.getCards());
             res = highestLevelOfThis.compareTo(highestLevelOfParam);
-        }else{
-            // Otherwise, we just compare two handtypes
+        }
+
+        if(res == 0){
+            // Otherwise
+            //      - both hand are basic or
+            //      - both a equals (try to get with the highest card)
+            //          Some case are eclipsed; to be added later
             HandTypeComparator handTypeComparator = new HandTypeComparator();
             res = handTypeComparator.compare(handTypeOfThis, handTypeOfOParam);
         }
@@ -106,8 +111,6 @@ public class Hand implements Comparable<Hand> {
         }
         return handType;
     }
-
-
 
 
     public boolean isPair(){
