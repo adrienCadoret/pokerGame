@@ -10,22 +10,22 @@ import static org.junit.Assert.*;
 /**
  * Created by damien on 08/10/2015.
  */
-public class HandConcreteTest {
+public class HandTest {
 
     @Test
     public void testAddCard() throws Exception {
-        Hand hand = new HandConcrete();
+        HandOld hand = new Hand();
         hand = hand.addCard(new Card(Level.AS, Color.CLUB));
-        assertEquals(((HandConcrete) hand).cards.size(), 1);
+        assertEquals(((Hand) hand).cards.size(), 1);
         hand = hand.addCard(new Card(Level.FIVE, Color.HEART));
-        assertEquals(((HandConcrete) hand).cards.size(), 2);
+        assertEquals(((Hand) hand).cards.size(), 2);
         hand = hand.addCard(new Card(Level.AS, Color.DIAMOND));
-        assertEquals(((HandConcrete) hand).cards.size(), 3);
+        assertEquals(((Hand) hand).cards.size(), 3);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testAddCardException() throws Exception {
-        HandConcrete hand = new HandConcrete();
+        Hand hand = new Hand();
         hand.addCard(new Card(Level.AS, Color.CLUB))
             .addCard(new Card(Level.FIVE, Color.HEART))
             .addCard(new Card(Level.AS, Color.DIAMOND))
@@ -36,7 +36,7 @@ public class HandConcreteTest {
 
     @Test
     public void testGet() throws Exception {
-        Hand hand = new HandConcrete()
+        HandOld hand = new Hand()
                 .addCard(new Card(Level.AS, Color.CLUB));
         assertEquals(hand.getCardNumber(), 1);
         assertEquals(hand.get(0), new Card(Level.AS, Color.CLUB));
@@ -44,18 +44,18 @@ public class HandConcreteTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testGetException() throws Exception {
-        HandConcrete hand = new HandConcrete();
+        Hand hand = new Hand();
         hand.get(0);
     }
 
     @Test
     public void testGetCardNumber() throws Exception {
-        Hand hand = new HandConcrete();
+        HandOld hand = new Hand();
         hand = hand.addCard(new Card(Level.AS, Color.CLUB))
                 .addCard(new Card(Level.FIVE, Color.HEART))
                 .addCard(new Card(Level.AS, Color.DIAMOND))
                 .addCard(new Card(Level.AS, Color.DIAMOND))
                 .addCard(new Card(Level.AS, Color.DIAMOND));
-        assertEquals(hand.getCardNumber(), ((HandConcrete) hand).cards.size());
+        assertEquals(hand.getCardNumber(), ((Hand) hand).cards.size());
     }
 }
