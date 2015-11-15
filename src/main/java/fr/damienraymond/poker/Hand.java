@@ -8,36 +8,41 @@ import fr.damienraymond.poker.utils.HandUtils;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static fr.damienraymond.poker.utils.HandUtils.getNumberOfSameLevelCard;
+import static fr.damienraymond.poker.utils.HandUtils.sameColor;
+
 /**
  * Created by damien on 02/10/2015.
  */
 public class Hand implements Comparable<Hand> {
 
-    protected Map<Integer, Card> cards;
+    protected final int MAX_NUMBER_CARD = 5;
 
-    public Hand(Map<Integer, Card> cards){
+    protected List<Card> cards;
+
+    public Hand(List<Card> cards){
         if (cards.size() > 5)
             throw new IllegalArgumentException("Hand is only 5 card, no more");
         this.cards = cards;
     }
 
     public Hand() {
-        this(new HashMap<>(5));
+        this(new ArrayList<>(5));
     }
 
     public Hand addCard(Card c) {
-        int indexNextElement = this.getCardNumber();
-        cards.put(indexNextElement, c);
+        if(this.getCardNumber() < MAX_NUMBER_CARD){
+            cards.add(c);
+        }else{
+            throw new IllegalArgumentException("Cannot add another card because the size is limited");
+        }
         // TODO : add factory ?
         return new Hand(this.cards);
     }
 
 
     public Card get(int i) {
-        Card res = cards.get(i);
-        if (res == null)
-            throw new IllegalArgumentException("Cannot get this card, please check card number before");
-        return res;
+        return cards.get(i);
     }
 
     public int getCardNumber() {
@@ -45,16 +50,16 @@ public class Hand implements Comparable<Hand> {
     }
 
     public List<Card> getCards() {
-        return new LinkedList<>(cards.values());
+        return new LinkedList<>(cards);
     }
 
     public void empty() {
-        cards = new HashMap<>(5); // TODO change to 2
+        cards = new ArrayList<>(5);
     }
 
     @Override
     public String toString() {
-        return cards.values().stream()
+        return cards.stream()
                 .map(Card::toString)
                 .collect(Collectors.joining(", "));
     }
@@ -111,40 +116,45 @@ public class Hand implements Comparable<Hand> {
     }
 
     public boolean isDoublePair(){
-        return HandUtils.getNumberOfSameLevelCard(getCards(), 2) == 2;
+        return getNumberOfSameLevelCard(getCards(), 2) == 2;
     }
 
     public boolean isThreeOfAKind(){
-        boolean isThereTreeIdenticalCards = HandUtils.getNumberOfSameLevelCard(getCards(), 3) == 1;
-        boolean isThereNoPair             = HandUtils.getNumberOfSameLevelCard(getCards(), 2) == 0;
+        boolean isThereTreeIdenticalCards = getNumberOfSameLevelCard(getCards(), 3) == 1;
+        boolean isThereNoPair             = getNumberOfSameLevelCard(getCards(), 2) == 0;
         return isThereTreeIdenticalCards && isThereNoPair;
     }
 
     public boolean isStraight(){
-        return HandUtils.isSequence(getCards()) && (! HandUtils.sameColor(getCards()));
+        return HandUtils.isSequence(getCards()) && (! sameColor(getCards()));
     }
 
     public boolean isFlush(){
-        return HandUtils.sameColor(getCards());
+        return sameColor(getCards()) && ! HandUtils.isSequence(getCards());
     }
 
     public boolean isFullHouse(){
-        boolean isThereTreeIdenticalCards = HandUtils.getNumberOfSameLevelCard(getCards(), 3) == 1;
-        boolean isTherePair               = HandUtils.getNumberOfSameLevelCard(getCards(), 2) == 1;
+        boolean isThereTreeIdenticalCards = getNumberOfSameLevelCard(getCards(), 3) == 1;
+        boolean isTherePair               = getNumberOfSameLevelCard(getCards(), 2) == 1;
         return isThereTreeIdenticalCards && isTherePair;
     }
 
     public boolean isFourOfAKind(){
-        return HandUtils.getNumberOfSameLevelCard(getCards(), 4) == 1;
+        return getNumberOfSameLevelCard(getCards(), 4) == 1;
     }
 
     public boolean isStraightFlush(){
-        return HandUtils.isSequence(getCards());
+        boolean containsAsLevel = cards.stream().anyMatch(c -> c.getLevel().equals(Level.AS));
+        return HandUtils.isSequence(getCards()) &&
+                sameColor(getCards()) &&
+                ! containsAsLevel;
     }
 
     public boolean isRoyalFlush(){
         List<Card> cards = getCards();
         boolean containsAsLevel = cards.stream().anyMatch(c -> c.getLevel().equals(Level.AS));
-        return containsAsLevel && HandUtils.isSequence(cards);
+        return containsAsLevel &&
+                HandUtils.isSequence(cards) &&
+                sameColor(getCards());
     }
 }
