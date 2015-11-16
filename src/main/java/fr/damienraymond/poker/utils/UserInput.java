@@ -10,9 +10,13 @@ public class UserInput {
 
 
     private static Integer readInt(String question){
-        Scanner scanner = new Scanner(System.in);
-        System.out.println(question);
-        return scanner.nextInt();
+        try{
+            Scanner scanner = new Scanner(System.in);
+            System.out.println(question);
+            return scanner.nextInt();
+        }catch (Exception e){
+            return -2;
+        }
     }
 
     private static boolean isValidUserInput(List<Integer> correctValues, Integer userInput) {
@@ -28,7 +32,8 @@ public class UserInput {
             if(! goOn){
                 Logger.error("Please insert correct answer");
             }
-        }while (! goOn);
+//        }while (! goOn);
+        }while (false);
         return userInput;
     }
 

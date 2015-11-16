@@ -56,6 +56,10 @@ public class PlayerCyclicIterator extends CyclicIterator<Player> {
         return new HashSet<Integer>(this.amountOnTheTableForEachPlayer.values()).size() == 1;
     }
 
+    public boolean testIfAllPlayerHasPlayed(){
+        return this.amountOnTheTableForEachPlayer.size() == this.list.size();
+    }
+
     public void cycleUntilAfterThisPlayer(Player player) {
         this.dropWhile(p -> ! p.equals(player));
     }
@@ -81,4 +85,9 @@ public class PlayerCyclicIterator extends CyclicIterator<Player> {
             return res;
         }).collect(Collectors.joining(", "));
     }
+
+    public Integer getAmountOnTheTable() {
+        return this.amountOnTheTableForEachPlayer.values().stream().mapToInt(Integer::intValue).sum();
+    }
+
 }

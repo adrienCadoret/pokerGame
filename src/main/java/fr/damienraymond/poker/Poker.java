@@ -28,6 +28,7 @@ public abstract class Poker extends Subject {
     private int bigBlindAmount;
     private int playerCanPlayNumber;
     private int hasPlayPlayerNumber;
+    private boolean canCheck = true;
 
     abstract protected Set<Chip> askPlayerToGive(Player p, int amountOfMoney);
 
@@ -314,21 +315,29 @@ public abstract class Poker extends Subject {
         hasPlayPlayerNumber  = hasPlayPlayerNumberOption.orElse(0);    // number of player that have to play. re-initialised on raises
         boolean goOn = true;
 
+        canCheck = true;
+
         while (goOn) {
             // Get next player around the table
             Player currentPlayer = players.next();
 
-            this.bet(players, currentPlayer, enableCheck);
+            this.bet(players, currentPlayer, enableCheck && canCheck);
 
             // Check end loop condition
-            goOn = ! players.testIfAllPlayersHasTheSameAmontOnTheTable(); // dummy for the moment. To be checked
+            goOn = ! (players.testIfAllPlayersHasTheSameAmontOnTheTable() && players.testIfAllPlayerHasPlayed()); // dummy for the moment. To be checked
         }
+
+        // Add all player bet to the table
+        table.addAmountOnTheTable(players.getAmountOnTheTable());
+        // Reinit amount for each player
+        players.initAmountOnTheTableForEachPlayer();
     }
 
     protected void bet(PlayerCyclicIterator players, Player currentPlayer, boolean enableCheck){
 
         Logger.info("================   NEXT PLAYER   ================");
         Logger.info("Current player : " + players.toString(currentPlayer));
+        Logger.info("Amount on the table : " + this.table.getAmountOnTheTable());
         Logger.info("CardsOnTheTable : " + this.table.getCardsOnTheTable());
 
         // Check if the current player can play (not folded, and have enough money)
@@ -372,7 +381,7 @@ public abstract class Poker extends Subject {
             if(amountThePlayerGive == amountToCall){
                 this.manageCallChoice(currentPlayer);
             }
-            amountToCall = amountThePlayerGive;
+            amountToCall = players.getAmountOnTheTableForPlayer(currentPlayer).orElse(amountThePlayerGive);
         }
     }
 
@@ -392,9 +401,11 @@ public abstract class Poker extends Subject {
         Logger.info(currentPlayer + " has checked.");
     }
     protected void manageCallChoice(Player currentPlayer){
+        canCheck = false;
         Logger.info(currentPlayer + " has called.");
     }
     protected void manageRaiseChoice(Player currentPlayer){
+        canCheck = false;
         Logger.info(currentPlayer + " has raised.");
 
         // In case of raise

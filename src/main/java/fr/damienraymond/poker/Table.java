@@ -21,6 +21,8 @@ public class Table {
     private UUID uuidTable;
     private List<Card> cardsOnTheTable;
     private CardPacket cardPacket;
+    private Integer amountOnTheTable = 0;
+
     public Table(Button button, List<Player> players) {
         this.button = button;
         this.players = players;
@@ -91,5 +93,13 @@ public class Table {
 
     public Table update() {
         return this;
+    }
+
+    public void addAmountOnTheTable(Integer amountOnTheTable) {
+        this.amountOnTheTable = amountOnTheTable;
+    }
+
+    public Integer getAmountOnTheTable() {
+        return amountOnTheTable;
     }
 }
