@@ -12,7 +12,9 @@ To launch your just have to run `Main.main()`.
 ## Diagram
 The structure is quite complex. Here is the intellij generated diagram :
 
-![Diagram](https://bitbucket.org/ptango/poker/raw/0047b2774c66a43253898d5507f7061e53f69bac/diagrams/diagram.png)
+![Diagram](https://bytebucket.org/ptango/poker/raw/8d15076f46cc2f1f49fd896264b8d31f0f892d81/diagrams/diagram.png)
+
+[Full size](https://bytebucket.org/ptango/poker/raw/8d15076f46cc2f1f49fd896264b8d31f0f892d81/diagrams/diagram.png)
 
 
 ## Improvements
