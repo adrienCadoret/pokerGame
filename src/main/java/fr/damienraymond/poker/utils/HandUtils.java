@@ -1,12 +1,11 @@
 package fr.damienraymond.poker.utils;
 
+import fr.damienraymond.poker.Hand;
 import fr.damienraymond.poker.card.Card;
 import fr.damienraymond.poker.card.Color;
 import fr.damienraymond.poker.card.Level;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -38,6 +37,16 @@ public class HandUtils {
     public static long getNumberOfSameLevelCard(List<Card> cards, int number){
         return HandUtils.groupBySameCardLevel(cards)
                 .entrySet().stream().filter(e -> e.getValue().size() == number).count();
+    }
+
+    public static Hand findBestHand(NonEmptySet<Hand> hands){
+        return hands.stream().reduce(hands.getOneElement(), (a, b) -> {
+            if(a.compareTo(b) >= 0){
+                return a;
+            }else{
+                return b;
+            }
+        });
     }
 
 }

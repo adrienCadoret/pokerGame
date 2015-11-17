@@ -8,8 +8,8 @@ import fr.damienraymond.poker.chip.ChipUtils;
 import fr.damienraymond.poker.observer.Subject;
 import fr.damienraymond.poker.player.Player;
 import fr.damienraymond.poker.player.PlayerSimple;
-import fr.damienraymond.poker.utils.Logger;
-import fr.damienraymond.poker.utils.RandomFactory;
+import fr.damienraymond.poker.utils.*;
+import sun.plugin.dom.exception.InvalidStateException;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -26,8 +26,6 @@ public abstract class Poker extends Subject {
     private Player playerHasPlayedFirst = null;
     private int amountToCall;
     private int bigBlindAmount;
-    private int playerCanPlayNumber;
-    private int hasPlayPlayerNumber;
     private boolean canCheck = true;
 
     abstract protected Set<Chip> askPlayerToGive(Player p, int amountOfMoney);
@@ -75,8 +73,10 @@ public abstract class Poker extends Subject {
         this.river(playerCyclicIterator);
 
         Logger.info("Shutdown");
-        this.shutdown(playerCyclicIterator, button);
+        Map<Player, List<Card>> shutdownRes = this.shutdown(playerCyclicIterator, button);
 
+        Logger.info("Results");
+        this.result(players, shutdownRes);
     }
 
 
@@ -262,9 +262,6 @@ public abstract class Poker extends Subject {
     }
 
     protected void beforePreFlop(PlayerCyclicIterator players){
-        // Player number
-        playerCanPlayNumber = players.number();
-
         // Init memorisation of who is folded for the hand
         players.initFoldedPlayer();
 
@@ -305,6 +302,7 @@ public abstract class Poker extends Subject {
     }
 
     protected void cycleUntilAfterTheButtonPlayer(PlayerCyclicIterator players){
+        Logger.trace("Cycle until after the button player");
         players.cycleUntilAfterThisPlayer(this.button.getButtonOwnerPlayer());
     }
 
@@ -312,7 +310,6 @@ public abstract class Poker extends Subject {
 
         // Initialize vars
         playerHasPlayedFirst = null; // Restart var playerHasPlayedFirst (beginning of flop, turn, river)
-        hasPlayPlayerNumber  = hasPlayPlayerNumberOption.orElse(0);    // number of player that have to play. re-initialised on raises
         boolean goOn = true;
 
         canCheck = true;
@@ -324,7 +321,7 @@ public abstract class Poker extends Subject {
             this.bet(players, currentPlayer, enableCheck && canCheck);
 
             // Check end loop condition
-            goOn = ! (players.testIfAllPlayersHasTheSameAmontOnTheTable() && players.testIfAllPlayerHasPlayed()); // dummy for the moment. To be checked
+            goOn = endCondition(players);
         }
 
         // Add all player bet to the table
@@ -333,10 +330,17 @@ public abstract class Poker extends Subject {
         players.initAmountOnTheTableForEachPlayer();
     }
 
+    protected boolean endCondition(PlayerCyclicIterator players){
+        return ! (
+                players.testIfAllPlayersHasTheSameAmountOnTheTable() &&
+                        players.testIfAllPlayerHasPlayed()
+        );
+    }
+
     protected void bet(PlayerCyclicIterator players, Player currentPlayer, boolean enableCheck){
 
         Logger.info("================   NEXT PLAYER   ================");
-        Logger.info("Current player : " + players.toString(currentPlayer));
+        Logger.info("Current player : " + players.toString(currentPlayer, table));
         Logger.info("Amount on the table : " + this.table.getAmountOnTheTable());
         Logger.info("CardsOnTheTable : " + this.table.getCardsOnTheTable());
 
@@ -359,8 +363,8 @@ public abstract class Poker extends Subject {
     }
 
     protected void managePlayerChoice(PlayerCyclicIterator players, Player currentPlayer, int amountThePlayerGive, boolean enableCheck){
-        final int FOLD  = 0;
         final int CHECK = -1;
+        final int FOLD  = 0;
 
         players.addAmountOnTheTableForPlayer(currentPlayer, amountThePlayerGive);
 
@@ -394,7 +398,6 @@ public abstract class Poker extends Subject {
     protected void manageFoldChoice(PlayerCyclicIterator players, Player currentPlayer){
         Logger.info(currentPlayer + " has folded.");
         players.playerHasFold(currentPlayer);
-        playerCanPlayNumber -= 1;
     }
 
     protected void manageCheckChoice(Player currentPlayer){
@@ -407,9 +410,6 @@ public abstract class Poker extends Subject {
     protected void manageRaiseChoice(Player currentPlayer){
         canCheck = false;
         Logger.info(currentPlayer + " has raised.");
-
-        // In case of raise
-        hasPlayPlayerNumber = 0;
     }
 
     /**
@@ -438,9 +438,11 @@ public abstract class Poker extends Subject {
      *******************************************************************************************************************
      */
 
-    protected void shutdown(PlayerCyclicIterator playerCyclicIterator, Button button) {
+    protected Map<Player, List<Card>> shutdown(PlayerCyclicIterator playerCyclicIterator, Button button) {
 
-        Player firstPlayerToRevealHisCards = null;
+        int hasShutdownNumber = 0;
+
+        Map<Player, List<Card>> playersCard = new HashMap<>();
 
         if (playerHasPlayedFirst == null) {
             // If no player has call (only checks)
@@ -456,20 +458,56 @@ public abstract class Poker extends Subject {
             // Get next player around the table
             Player currentPlayer = playerCyclicIterator.next();
 
-            if (firstPlayerToRevealHisCards == null)
-                firstPlayerToRevealHisCards = currentPlayer;
+            hasShutdownNumber++;
 
             // If current player is not fold
-            if (playerCyclicIterator.thisPlayerHasFolded(currentPlayer)) {
+            if (! playerCyclicIterator.thisPlayerHasFolded(currentPlayer)) {
                 List<Card> cards = this.shutdown(currentPlayer);
+                playersCard.put(currentPlayer, cards);
+                Logger.info(currentPlayer + " -> " + cards);
             }
 
             // When the all the player has shown their cards
-            goOn = firstPlayerToRevealHisCards == currentPlayer;
+            goOn = hasShutdownNumber < table.getPlayers().size();
         }
 
-
+        return playersCard;
     }
+
+    /**
+     *******************************************************************************************************************
+     *****************************************             RESULT             ******************************************
+     *******************************************************************************************************************
+     */
+
+    private void result(List<Player> players, Map<Player, List<Card>> shutdownRes) {
+
+        Logger.info("Results...");
+
+        Map<Hand, Player> playerHands = new HashMap<>();
+
+        players.stream().forEach(player -> {
+            List<Card> playerCards = shutdownRes.get(player);
+            Set<Hand> collected = new HashSet<Hand>();
+            if (playerCards != null) {
+
+                Set<Card> cards = new HashSet<>();
+                cards.addAll(playerCards);
+                cards.addAll(this.table.getCardsOnTheTable());
+
+
+                Set<Set<Card>> combination = Combination.combination(cards, 5);
+                collected = combination.stream()
+                        .map(hand -> new Hand(new ArrayList<>(hand)))
+                        .collect(Collectors.toSet());
+            }
+            playerHands.put(HandUtils.findBestHand(new NonEmptySet<Hand>(collected)), player);
+        });
+        Hand bestHand = HandUtils.findBestHand(new NonEmptySet<Hand>(playerHands.keySet()));
+        Logger.info("Best hand : " + Hand.getHandType(bestHand) + " (" + bestHand + ")");
+        Logger.info("Winner : " + playerHands.get(bestHand));
+    }
+
 
 
 }

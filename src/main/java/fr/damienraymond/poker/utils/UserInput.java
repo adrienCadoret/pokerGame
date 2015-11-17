@@ -32,8 +32,8 @@ public class UserInput {
             if(! goOn){
                 Logger.error("Please insert correct answer");
             }
-//        }while (! goOn);
-        }while (false);
+        }while (! goOn);
+//        }while (false);
         return userInput;
     }
 

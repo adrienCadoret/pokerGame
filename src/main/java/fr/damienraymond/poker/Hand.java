@@ -89,24 +89,28 @@ public class Hand implements Comparable<Hand> {
     }
 
     public HandType getHandType(){
+        return Hand.getHandType(this);
+    }
+
+    public static HandType getHandType(Hand hand){
         HandType handType = HandType.BASIC_HAND;
-        if(this.isPair()){
+        if(hand.isPair()){
             handType = HandType.PAIR;
-        }else if(this.isDoublePair()){
+        }else if(hand.isDoublePair()){
             handType = HandType.DOUBLE_PAIR;
-        }else if(this.isThreeOfAKind()){
+        }else if(hand.isThreeOfAKind()){
             handType = HandType.THREE_OF_A_KIND;
-        }else if(this.isStraight()){
+        }else if(hand.isStraight()){
             handType = HandType.STRAIGHT;
-        }else if(this.isFlush()){
+        }else if(hand.isFlush()){
             handType = HandType.FLUSH;
-        }else if(this.isFullHouse()){
+        }else if(hand.isFullHouse()){
             handType = HandType.FULL_HOUSE;
-        }else if(this.isFourOfAKind()){
+        }else if(hand.isFourOfAKind()){
             handType = HandType.FOUR_OF_A_KIND;
-        }else if(this.isStraightFlush()){
+        }else if(hand.isStraightFlush()){
             handType = HandType.STRAIGHT;
-        }else if(this.isRoyalFlush()){
+        }else if(hand.isRoyalFlush()){
             handType = HandType.ROYAL_FLUSH;
         }
         return handType;

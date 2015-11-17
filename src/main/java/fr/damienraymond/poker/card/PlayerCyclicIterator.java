@@ -1,5 +1,6 @@
 package fr.damienraymond.poker.card;
 
+import fr.damienraymond.poker.Table;
 import fr.damienraymond.poker.player.Player;
 import fr.damienraymond.poker.utils.CyclicIterator;
 import fr.damienraymond.poker.utils.Logger;
@@ -40,20 +41,27 @@ public class PlayerCyclicIterator extends CyclicIterator<Player> {
 
     public void addAmountOnTheTableForPlayer(Player p, int amount){
         int previousAmount = this.getAmountOnTheTableForPlayer(p).orElse(0);
+
+        // Manage case of fold (-1)
+        amount = (amount < 0) ? 0 : amount;
         this.amountOnTheTableForEachPlayer.put(p, previousAmount + amount);
     }
 
     public Optional<Integer> getAmountOnTheTableForPlayer(Player p){
         Integer amount = this.amountOnTheTableForEachPlayer.get(p);
-        if(amount == null){
+        if(amount == null || amount == 0){
             return Optional.empty();
         }else{
             return Optional.of(amount);
         }
     }
 
-    public boolean testIfAllPlayersHasTheSameAmontOnTheTable(){
-        return new HashSet<Integer>(this.amountOnTheTableForEachPlayer.values()).size() == 1;
+    public boolean testIfAllPlayersHasTheSameAmountOnTheTable(){
+        Set<Integer> collected = this.amountOnTheTableForEachPlayer.entrySet().stream()
+                .filter(e -> !this.foldedPlayer.getOrDefault(e.getKey(), false)) // Don't take care of folded players
+                .map(Map.Entry::getValue) // Get values
+                .collect(Collectors.toSet());
+        return collected.size() == 1;
     }
 
     public boolean testIfAllPlayerHasPlayed(){
@@ -72,15 +80,27 @@ public class PlayerCyclicIterator extends CyclicIterator<Player> {
         return (PlayerCyclicIterator) super.dropWhile(predicate);
     }
 
-    public String toString(Player currentPlayer) {
+    public String toString(Player currentPlayer, Table table) {
         return this.list.stream().map(player -> {
             String res = "";
+            String tmp = "";
+            tmp = player + " (" + this.amountOnTheTableForEachPlayer.getOrDefault(player, 0) + ")";
+
+            // Button
+            if(player.equals(table.getButton().getButtonOwnerPlayer())){
+                tmp = "[B]" + tmp;
+            }
+
+            // Folded
+            if(this.foldedPlayer.getOrDefault(player, false)){
+                tmp = "---" + tmp + "---";
+            }
+
+            // Current player
             if(currentPlayer.equals(player)){
-                res += "{";
-                res += player;
-                res += "}";
+                res += "{{{ " + tmp + " }}}";
             }else{
-                res += player;
+                res += tmp;
             }
             return res;
         }).collect(Collectors.joining(", "));
