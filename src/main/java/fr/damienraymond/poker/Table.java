@@ -102,4 +102,8 @@ public class Table {
     public Integer getAmountOnTheTable() {
         return amountOnTheTable;
     }
+
+    public void initAmountOnTheTable() {
+        this.amountOnTheTable = 0;
+    }
 }

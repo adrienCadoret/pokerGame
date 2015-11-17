@@ -70,9 +70,9 @@ public abstract class Player implements Observer {
         return result;
     }
 
-    public abstract boolean canPay();
+    public abstract boolean canPay(int amountToCall);
 
-    public abstract Set<Chip> giveChip(int amount);
+    public abstract void giveChip(int amount);
 
     public abstract void receiveChipList(List<Chip> chips);
 

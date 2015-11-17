@@ -21,13 +21,13 @@ public class PlayerSimple extends Player {
         super(playerName);
     }
 
-    public boolean canPay() {
-        return true; // check money : for the moment let's guess the player is very rich
+    public boolean canPay(int amountToCall) {
+        return this.chips.getMoneyAmount() >= amountToCall;
     }
 
-    public Set<Chip> giveChip(int amount){
+    public void giveChip(int amount){
+        Logger.trace("giveChip(" + amount + ")");
         this.chips.give(amount);
-        return new HashSet<>();
     }
 
     public void receiveChipList(List<Chip> chips) {
@@ -62,7 +62,12 @@ public class PlayerSimple extends Player {
 
         Logger.trace("Correct values : " + correctValues);
 
-        return UserInput.readAndValidateUserInput(correctValues, amountToRaise, this.chips.getMoneyAmount(), "Choices ? " + PlayerInput.choicesToString(amountToCall, amountToRaise, playerCanCheck));
+        Integer res = UserInput.readAndValidateUserInput(correctValues, amountToRaise, this.chips.getMoneyAmount(), "Choices ? " + PlayerInput.choicesToString(amountToCall, amountToRaise, playerCanCheck));
+
+        // Update chip stack
+        this.giveChip(res);
+
+        return res;
     }
 
     public List<Card> shutdown() {

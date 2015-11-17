@@ -49,9 +49,11 @@ public class ChipStack {
         int tmpAmount = amount;
 
         for (Integer value : availableValues) {
-            int numberChipValueThePlayerHas = chips.getOrDefault(value, 0);
+            int numberChipValueThePlayerHas = chips.getOrDefault(Chip.valueOf(value), 0);
             tmpAmount -= this.giveForValue(value, tmpAmount, numberChipValueThePlayerHas);
         }
+        Logger.trace(tmpAmount + " given");
+        Logger.trace(this.chips.toString());
         return tmpAmount;
     }
 

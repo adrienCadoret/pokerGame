@@ -9,7 +9,6 @@ import fr.damienraymond.poker.observer.Subject;
 import fr.damienraymond.poker.player.Player;
 import fr.damienraymond.poker.player.PlayerSimple;
 import fr.damienraymond.poker.utils.*;
-import sun.plugin.dom.exception.InvalidStateException;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -27,8 +26,9 @@ public abstract class Poker extends Subject {
     private int amountToCall;
     private int bigBlindAmount;
     private boolean canCheck = true;
+    private int initialAmount;
 
-    abstract protected Set<Chip> askPlayerToGive(Player p, int amountOfMoney);
+    abstract protected void askPlayerToGive(Player p, int amountOfMoney);
 
     abstract protected void giveChipsToPlayer(Player player, List<Chip> chips);
 
@@ -46,7 +46,7 @@ public abstract class Poker extends Subject {
 
         Logger.info("Welcome ! Let's play Poker !");
 
-        int initialAmount = 20_000;
+        initialAmount = 20_000;
 
         Logger.info("Launching...");
         List<Player> players = this.launch(table, playerNames, initialAmount);
@@ -57,27 +57,36 @@ public abstract class Poker extends Subject {
 
         final PlayerCyclicIterator playerCyclicIterator = new PlayerCyclicIterator(players);
 
-        Logger.info("Blinds");
-        this.blinds(playerCyclicIterator, initialAmount);
+        do {
+            Logger.info("Blinds");
+            this.blinds(playerCyclicIterator, initialAmount);
 
-        Logger.info("Pre-flop");
-        this.preFlop(playerCyclicIterator);
+            Logger.info("Pre-flop");
+            this.preFlop(playerCyclicIterator);
 
-        Logger.info("Flop");
-        this.flop(playerCyclicIterator, 3); // get rid of the 3 here, not business
+            Logger.info("Flop");
+            this.flop(playerCyclicIterator, 3); // get rid of the 3 here, not business
 
-        Logger.info("Turn");
-        this.turn(playerCyclicIterator);
+            Logger.info("Turn");
+            this.turn(playerCyclicIterator);
 
-        Logger.info("River");
-        this.river(playerCyclicIterator);
+            Logger.info("River");
+            this.river(playerCyclicIterator);
 
-        Logger.info("Shutdown");
-        Map<Player, List<Card>> shutdownRes = this.shutdown(playerCyclicIterator, button);
+            Logger.info("Shutdown");
+            Map<Player, List<Card>> shutdownRes = this.shutdown(playerCyclicIterator, button);
 
-        Logger.info("Results");
-        this.result(players, shutdownRes);
+            Logger.info("Results");
+            Player winner = this.result(players, shutdownRes);
+
+            Logger.info("Manage winner");
+            this.manageWinner(winner);
+
+        }while (this.stopGameCondition());
+
     }
+
+
 
 
     /**
@@ -191,7 +200,7 @@ public abstract class Poker extends Subject {
     protected void chipDistribution(List<Player> players, int amount) {
         // Call of getChipsListFromAmount for each player, to prevent same memory pointer for chips
         // In the future it could be better to avoid this and to clone the chips set
-        players.forEach(player -> this.giveChipsToPlayer(player, ChipUtils.getChipsListFromAmount(amount)));
+        players.forEach(player -> this.giveChipsToPlayer(player, ChipUtils.getChipsListFromAmount(this.determineBlindAmounts(this.initialAmount),amount)));
     }
 
     /**
@@ -224,8 +233,12 @@ public abstract class Poker extends Subject {
      * @return small blind amount
      */
     protected int determineBlindAmounts(int initialAmount){
-        bigBlindAmount = initialAmount / 100;
+        bigBlindAmount = determineBigBlindAmount(initialAmount);
         return bigBlindAmount / 2;
+    }
+
+    protected int determineBigBlindAmount(int initialAmount){
+        return initialAmount / 100;
     }
 
 
@@ -349,11 +362,13 @@ public abstract class Poker extends Subject {
             int amountThePlayerGive = this.playerChoice(players, currentPlayer, enableCheck);
 
             this.managePlayerChoice(players, currentPlayer, amountThePlayerGive, enableCheck);
+        }else{
+            Logger.info(currentPlayer + " can't play !");
         }
     }
 
     protected boolean playerCanPlay(PlayerCyclicIterator players, Player p){
-        return ! players.thisPlayerHasFolded(p) && p.canPay();
+        return (! players.thisPlayerHasFolded(p)) && p.canPay(this.amountToCall);
     }
 
     protected int playerChoice(PlayerCyclicIterator players, Player p, boolean enableCheck){
@@ -374,7 +389,6 @@ public abstract class Poker extends Subject {
 
         players.addAmountOnTheTableForPlayer(currentPlayer, amountThePlayerGive);
 
-        int amountThePlayerHasOnTheTable = players.getAmountOnTheTableForPlayer(currentPlayer).get();
 
         // Check if the player wants to fold
         if(amountThePlayerGive == FOLD){ // fold
@@ -384,6 +398,8 @@ public abstract class Poker extends Subject {
         } else {
 
             this.memorizeFirstPlayerToCall(currentPlayer);
+
+            int amountThePlayerHasOnTheTable = players.getAmountOnTheTableForPlayer(currentPlayer).get();
 
             // Check of the player has raised
             // The player has raised if he doubled the `amountToCall`
@@ -487,13 +503,13 @@ public abstract class Poker extends Subject {
      *******************************************************************************************************************
      */
 
-    private void result(List<Player> players, Map<Player, List<Card>> shutdownRes) {
+    private Player result(List<Player> players, Map<Player, List<Card>> shutdownRes) {
 
         Map<Hand, Player> playerHands = new HashMap<>();
 
         players.stream().forEach(player -> {
             List<Card> playerCards = shutdownRes.get(player);
-            Set<Hand> collected = new HashSet<Hand>();
+            Set<Hand> collected = new HashSet<>();
             if (playerCards != null) {
 
                 // Create a set of 7 cards
@@ -516,9 +532,21 @@ public abstract class Poker extends Subject {
 
         Hand bestHand = HandUtils.findBestHand(new NonEmptySet<>(playerHands.keySet()));
         Logger.info("Best hand : " + Hand.getHandType(bestHand) + " (" + bestHand + ")");
-        Logger.info("Winner : " + playerHands.get(bestHand));
+        Player winner = playerHands.get(bestHand);
+        Logger.info("Winner : " + winner);
+        return winner;
     }
 
+    private void manageWinner(Player winner) {
+        this.giveChipsToPlayer(winner, ChipUtils.getChipsListFromAmount(this.determineBlindAmounts(this.initialAmount), this.table.getAmountOnTheTable()));
+        this.table.initAmountOnTheTable();
+    }
+
+    private boolean stopGameCondition() {
+        return this.table.getPlayers().stream()
+                .filter(p -> p.canPay(this.determineBigBlindAmount(this.initialAmount))) // Player can play only if he has more than the bigbling amount for the next game
+                .count() >= 2;
+    }
 
 
 }

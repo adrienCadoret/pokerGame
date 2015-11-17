@@ -14,9 +14,9 @@ import java.util.Set;
  */
 public class PokerSimple extends Poker {
     @Override
-    protected Set<Chip> askPlayerToGive(Player p, int amountOfMoney) {
+    protected void askPlayerToGive(Player p, int amountOfMoney) {
         Logger.trace("askPlayerToGive(" + p.getPlayerName() + ", " + amountOfMoney + ")");
-        return p.giveChip(amountOfMoney);
+        p.giveChip(amountOfMoney);
     }
 
     @Override
