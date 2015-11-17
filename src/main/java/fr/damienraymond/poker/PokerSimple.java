@@ -32,9 +32,9 @@ public class PokerSimple extends Poker {
     }
 
     @Override
-    protected int askThePlayerToPlay(Player player, int bigBlindAmount, int amountToCall, boolean canCheck) {
+    protected int askThePlayerToPlay(Player player, int amountToCall, int amountToRaise, boolean canCheck) {
         Logger.trace("askThePlayerToPlay(" + player.getPlayerName() + ")");
-        return player.play(bigBlindAmount, amountToCall, canCheck);
+        return player.play(amountToCall, amountToRaise, canCheck);
     }
 
     @Override

@@ -78,7 +78,7 @@ public abstract class Player implements Observer {
 
     public abstract void receiveCards(List<Card> cards);
 
-    public abstract int play(int bigBlindAmount, int amountToCall, boolean playerCanCheck);
+    public abstract int play(int amountToCall, int amountToRaise, boolean playerCanCheck);
 
     public abstract List<Card> shutdown();
 

@@ -53,16 +53,16 @@ public class PlayerSimple extends Player {
         return res.toString();
     }
 
-    public int play(int bigBlindAmount, int amountToCall, boolean playerCanCheck) {
+    public int play(int amountToCall, int amountToRaise, boolean playerCanCheck) {
 
         Logger.info(this.getGameInfos());
 
         // List of the correct user inputs
-        List<Integer> correctValues = new ArrayList<>(PlayerInput.getChoices(bigBlindAmount, amountToCall, playerCanCheck).values());
+        List<Integer> correctValues = new ArrayList<>(PlayerInput.getChoices(amountToCall, playerCanCheck).values());
 
         Logger.trace("Correct values : " + correctValues);
 
-        return UserInput.readAndValidateUserInput(correctValues, "Choices ? " + PlayerInput.choicesToString(bigBlindAmount, amountToCall, playerCanCheck));
+        return UserInput.readAndValidateUserInput(correctValues, amountToRaise, this.chips.getMoneyAmount(), "Choices ? " + PlayerInput.choicesToString(amountToCall, amountToRaise, playerCanCheck));
     }
 
     public List<Card> shutdown() {

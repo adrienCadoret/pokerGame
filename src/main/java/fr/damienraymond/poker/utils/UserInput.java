@@ -19,16 +19,19 @@ public class UserInput {
         }
     }
 
-    private static boolean isValidUserInput(List<Integer> correctValues, Integer userInput) {
-        return correctValues.contains(userInput);
+    private static boolean isValidUserInput(List<Integer> correctValues, int minValue, Integer maxValue, Integer userInput) {
+        return correctValues.contains(userInput) || (
+                        userInput >= minValue &&
+                        userInput <= maxValue
+                );
     }
 
-    public static Integer readAndValidateUserInput(List<Integer> correctValues, String question) {
-        boolean goOn = true;
-        Integer userInput = null;
+    public static Integer readAndValidateUserInput(List<Integer> correctValues, int minValue, int maxValue, String question) {
+        boolean goOn;
+        Integer userInput;
         do{
             userInput = UserInput.readInt(question);
-            goOn = isValidUserInput(correctValues, userInput);
+            goOn = isValidUserInput(correctValues, minValue, maxValue, userInput);
             if(! goOn){
                 Logger.error("Please insert correct answer");
             }

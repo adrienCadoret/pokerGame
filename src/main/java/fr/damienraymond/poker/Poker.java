@@ -34,7 +34,7 @@ public abstract class Poker extends Subject {
 
     abstract protected void giveCardToPlayer(Player player, List<Card> cards);
 
-    abstract protected int askThePlayerToPlay(Player player, int bigBlindAmount, int amountToCall, boolean canCheck); // returns the player choice
+    abstract protected int askThePlayerToPlay(Player player, int amountToCall, int amountToRaise, boolean canCheck); // returns the player choice
 
     abstract protected List<Card> shutdown(Player p);
 
@@ -358,8 +358,14 @@ public abstract class Poker extends Subject {
 
     protected int playerChoice(PlayerCyclicIterator players, Player p, boolean enableCheck){
         // If the player has already put amount on the table (in case of small blind for example)
-        int amountToCall = players.getAmountOnTheTableForPlayer(p).orElse(this.amountToCall);
-        return this.askThePlayerToPlay(p, bigBlindAmount, amountToCall, enableCheck);
+        Optional<Integer> amountOnTheTableForPlayer = players.getAmountOnTheTableForPlayer(p);
+        int amountToRaise = amountToCall * 2;
+        int amountToCall = this.amountToCall;
+        if(amountOnTheTableForPlayer.isPresent()){
+            amountToRaise -= amountOnTheTableForPlayer.get();
+            amountToCall -= amountOnTheTableForPlayer.get();
+        }
+        return this.askThePlayerToPlay(p, amountToCall, amountToRaise, enableCheck);
     }
 
     protected void managePlayerChoice(PlayerCyclicIterator players, Player currentPlayer, int amountThePlayerGive, boolean enableCheck){
@@ -367,6 +373,8 @@ public abstract class Poker extends Subject {
         final int FOLD  = 0;
 
         players.addAmountOnTheTableForPlayer(currentPlayer, amountThePlayerGive);
+
+        int amountThePlayerHasOnTheTable = players.getAmountOnTheTableForPlayer(currentPlayer).get();
 
         // Check if the player wants to fold
         if(amountThePlayerGive == FOLD){ // fold
@@ -378,14 +386,13 @@ public abstract class Poker extends Subject {
             this.memorizeFirstPlayerToCall(currentPlayer);
 
             // Check of the player has raised
-            if (bigBlindAmount + amountToCall == amountThePlayerGive) {
-                this.manageRaiseChoice(currentPlayer);
-            }
-
-            if(amountThePlayerGive == amountToCall){
+            // The player has raised if he doubled the `amountToCall`
+            if (amountThePlayerHasOnTheTable >= amountToCall * 2) {
+                this.manageRaiseChoice(currentPlayer, amountThePlayerHasOnTheTable);
+            }else if(amountThePlayerHasOnTheTable == amountToCall){
                 this.manageCallChoice(currentPlayer);
             }
-            amountToCall = players.getAmountOnTheTableForPlayer(currentPlayer).orElse(amountThePlayerGive);
+            amountToCall = amountThePlayerHasOnTheTable;
         }
     }
 
@@ -407,7 +414,7 @@ public abstract class Poker extends Subject {
         canCheck = false;
         Logger.info(currentPlayer + " has called.");
     }
-    protected void manageRaiseChoice(Player currentPlayer){
+    protected void manageRaiseChoice(Player currentPlayer, int amountThePlayerHasOnTheTable){
         canCheck = false;
         Logger.info(currentPlayer + " has raised.");
     }
@@ -482,8 +489,6 @@ public abstract class Poker extends Subject {
 
     private void result(List<Player> players, Map<Player, List<Card>> shutdownRes) {
 
-        Logger.info("Results...");
-
         Map<Hand, Player> playerHands = new HashMap<>();
 
         players.stream().forEach(player -> {
@@ -491,19 +496,25 @@ public abstract class Poker extends Subject {
             Set<Hand> collected = new HashSet<Hand>();
             if (playerCards != null) {
 
+                // Create a set of 7 cards
                 Set<Card> cards = new HashSet<>();
                 cards.addAll(playerCards);
                 cards.addAll(this.table.getCardsOnTheTable());
 
-
+                // Then create combinations of `cards` of size 5
                 Set<Set<Card>> combination = Combination.combination(cards, 5);
+
+                // Create good structure
                 collected = combination.stream()
                         .map(hand -> new Hand(new ArrayList<>(hand)))
                         .collect(Collectors.toSet());
             }
-            playerHands.put(HandUtils.findBestHand(new NonEmptySet<Hand>(collected)), player);
+            Hand bestHand = HandUtils.findBestHand(new NonEmptySet<>(collected));
+            playerHands.put(bestHand, player);
         });
-        Hand bestHand = HandUtils.findBestHand(new NonEmptySet<Hand>(playerHands.keySet()));
+
+
+        Hand bestHand = HandUtils.findBestHand(new NonEmptySet<>(playerHands.keySet()));
         Logger.info("Best hand : " + Hand.getHandType(bestHand) + " (" + bestHand + ")");
         Logger.info("Winner : " + playerHands.get(bestHand));
     }
