@@ -8,6 +8,8 @@ Import project in your favorite IDE.
 
 To launch your just have to run `Main.main()`.
 
+## For the second part...
+...you can extend `Player` and `Poker` to implement distribution. `Poker` represents to server and `Player` the client.
 
 ## Diagram
 The structure is quite complex. Here is the intellij generated diagram :
