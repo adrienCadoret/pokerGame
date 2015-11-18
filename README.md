@@ -17,7 +17,7 @@ The structure is quite complex. Here is the intellij generated diagram :
 ![Diagram](https://bytebucket.org/ptango/poker/raw/8d15076f46cc2f1f49fd896264b8d31f0f892d81/diagrams/diagram.png)
 
 [Full size](https://bytebucket.org/ptango/poker/raw/8d15076f46cc2f1f49fd896264b8d31f0f892d81/diagrams/diagram.png)
-[Full size + detail](https://bytebucket.org/ptango/poker/raw/8d15076f46cc2f1f49fd896264b8d31f0f892d81/diagrams/diagram.svg)
+[Full size + detail](https://bytebucket.org/ptango/poker/raw/33d053bd1731268be127299079cbfea301e3fa9c/diagrams/diagram.svg)
 
 
 ## Improvements
